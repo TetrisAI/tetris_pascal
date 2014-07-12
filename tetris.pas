@@ -13,10 +13,10 @@ begin
   r2s := i2s(i1) + '.' + i2s(i2);
 end;
 
-{$I tetris_sound.inc}
-{$I tetris_pce.inc}
-{$I tetris_def.inc}
-{$I tetris_ai.inc}
+  {$I tetris_sound.inc}
+  {$I tetris_pce.inc}
+  {$I tetris_def.inc}
+  {$I tetris_ai.inc}
 
 const
   ck: array[-1..8] of longword = ($000000,
@@ -240,8 +240,8 @@ begin
   if stickb = true then
   //如果能塞入则移动
   begin
-    aiknext[1].knd := knd;
-    aiknext[1].sit := sit;
+    aiknext[1].knd  := knd;
+    aiknext[1].sit  := sit;
     aiknext[1].posx := posx;
     aiknext[1].posy := posy;
   end;
