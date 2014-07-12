@@ -1,10 +1,11 @@
 Tetris_Pascal
 =============
-这是一个用Free Pascal写的俄罗斯方块游戏
-支持AI自动打方块，目前10x20场地单块平均越1000W行。
+这是一个用Free Pascal写的俄罗斯方块游戏。支持AI自动打方块，目前10x20场地单块平均越1000W行。
 
 
 Key Control:
+=============
+
 Left	move left
 Right	move right
 Up	transistion
@@ -26,7 +27,9 @@ R	restart
 Z	SZ on|off
 ESC	Exit
 
-按键说明	
+按键说明
+=============	
+
 左	左移一格
 右	右移一格
 上	逆时针旋转
