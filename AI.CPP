@@ -319,15 +319,15 @@ double Evaluate(int DepthCur)
   Middle = Abs(PieceTry[DepthCur].PosX *2-BoardWidth);
   //返回估值结果
 	return 
-		-LandHeight*200/BoardHeight
+		-LandHeight*190/BoardHeight
 		+EraseCount*6
-		-ColTrans*8
-		-RowTrans*8
+		-ColTrans*12
+		-RowTrans*12
 		-HoleCount*6
 		-HoleLine*38
 		-WellDepth*10
 		-HoleDepth*4
-		-HolePiece*0.5
+		-HolePiece*10/BoardHeight
 		+Middle*0.2;
 }
 
