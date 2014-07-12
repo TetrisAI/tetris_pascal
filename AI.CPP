@@ -23,9 +23,7 @@ struct block
 const int PieceBitmap[7][8][4] =
 {
 	{{0,6,6,0},{0,6,6,0},{0,6,6,0},{0,6,6,0},{0,6,6,0},{0,6,6,0},{0,6,6,0},{0,6,6,0}},
-	{{0,0,15,0},{2,2,2,2},{0,0,15,0},{2,2,2,2},{0,0,15,0},{2,2,2,2},{0,0,15,0},
-
-{2,2,2,2}},
+	{{0,0,15,0},{2,2,2,2},{0,0,15,0},{2,2,2,2},{0,0,15,0},{2,2,2,2},{0,0,15,0},{2,2,2,2}},
 	{{0,6,3,0},{0,1,3,2},{0,6,3,0},{0,1,3,2},{0,6,3,0},{0,1,3,2},{0,6,3,0},{0,1,3,2}},
 	{{0,3,6,0},{0,2,3,1},{0,3,6,0},{0,2,3,1},{0,3,6,0},{0,2,3,1},{0,3,6,0},{0,2,3,1}},
 	{{0,4,7,0},{0,3,2,2},{0,0,7,1},{0,2,2,6},{0,4,7,0},{0,3,2,2},{0,0,7,1},{0,2,2,6}},
@@ -151,9 +149,7 @@ void Fix(int DepthCur)
     {
       //当前行和方块常量行进行或运算
 			Board[PieceTry[DepthCur].PosY+j-2][DepthCur]|=
-				(PieceBitmap[PieceTry[DepthCur].Kind-1][PieceTry
-
-[DepthCur].Rot-1][j]<<
+				(PieceBitmap[PieceTry[DepthCur].Kind-1][PieceTry[DepthCur].Rot-1][j]<<
 				(BoardWidth-PieceTry[DepthCur].PosX+1));
     }
   }
@@ -170,9 +166,7 @@ bool Overlap(int DepthCur)
     {
       //如果当前行和方块常量行进行与运算为不零
 			if((Board[PieceTry[DepthCur].PosY+j-2][DepthCur-1]&
-				(PieceBitmap[PieceTry[DepthCur].Kind-1][PieceTry
-
-[DepthCur].Rot-1][j]<<
+				(PieceBitmap[PieceTry[DepthCur].Kind-1][PieceTry[DepthCur].Rot-1][j]<<
 				(BoardWidth-PieceTry[DepthCur].PosX+1)))!=0)
       {
         //返回真
@@ -403,9 +397,7 @@ double Calculate(int DepthCur)
     //直到重叠
     while (!Overlap(DepthCur));
     //从最左到最右厉遍坐标
-    for (int PosXi = Piece[DepthCur].PosX + Left; PosXi <= Piece[DepthCur].PosX + Right; 
-
-PosXi++)
+    for (int PosXi = Piece[DepthCur].PosX + Left; PosXi <= Piece[DepthCur].PosX + Right; PosXi++)
     {
       //重置尝试方块横坐标为厉遍坐标
       PieceTry[DepthCur].PosX = PosXi;
