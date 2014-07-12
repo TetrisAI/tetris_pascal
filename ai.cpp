@@ -1,4 +1,4 @@
-//AI.cpp
+//ai.cpp
 //Code by ax_pokl
 
 //内联函数
