@@ -79,7 +79,7 @@ begin
         knd := 0;
     end;
     //设置当前方块位置及状态
-    sit := curR;
+    sit  := curR;
     posx := curX;
     posy := curY;
   end;
@@ -107,7 +107,7 @@ begin
     //设置深度
     if not (knd = 0) then
       aidepthc := 2 + guess;
-    sit := 1;
+    sit  := 1;
     posx := wbd div 2;
     posy := hbd - 1;
   end;
