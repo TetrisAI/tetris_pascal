@@ -8,30 +8,6 @@ Tetris_Pascal
 * 支持电脑自动打方块，并且可以调整深度。
 * 目前人工智能10x20场地单块平均每局500W行。
 
-
-Key Control:
--------------
-* Left	move left
-* Right	move right
-* Up	transistion
-* Down	move down
-* Space	down to the buttom
-* Enter	AI move
-* 1	AI auto
-* 2	AI fast
-* 3	AI depth search
-* 4	sound on|off
-* 5	music on|off
-* 9	BMP
-* +-	block size +-
-* WASD	board size +-
-* C	clear score
-* HJ	add junk line
-* P	pause
-* R	restart
-* Z	SZ on|off
-* ESC	Exit
-
 按键说明
 -------------
 * 左	左移一格
