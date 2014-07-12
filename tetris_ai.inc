@@ -332,7 +332,7 @@ begin
           //迭代深入
           //        airesr:=airesr+aigo(aidepth+1);//无剪枝
           airesr := Max(airesr, aigo(aidepth + 1));//剪枝
-      //如果结果仍旧大于最大结果
+          //如果结果仍旧大于最大结果
       if airesr < airesm then
       begin
         //更新最大结果
