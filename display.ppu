@@ -1,0 +1,1127 @@
+(**********************************************************************
+    This file is part of ax_pokl run time library
+    Copyright (c) 2014 by ax_pokl
+
+    This unit is similar as unit Graph in Free Pascal run time library
+
+    See the file COPYING.FPC, included in this distribution,
+    for details about the copyright.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+    这个文件是ax_pokl运行时库的一部分
+    版权所有（c）2014年ax_pokl
+
+    本Display单元库类似于Free Pascal中的单元库Graph
+
+    版权信息请参考COPYING.FPC。
+ **********************************************************************
+    说明概要
+    更新时间：2014-06-21 10:24:34
+    本单元库直接调用Windows GDI API。
+    支持任意大小窗口，24位RGB真彩色
+    支持字符串输出；可更改字体大小，颜色，粗细等。
+    支持简单绘图，如：画点，画线，画矩形，画椭圆等。
+    支持文件拖拽以及键盘，鼠标事件的获取和发送。
+    支持BMP位图光栅透明读入，复制，拉伸及绘制到屏幕。
+    支持各种类型音频文件播放，音量控制及快进快退。可播放多个音频文件。
+    请使用{$APPTYPE GUI}关闭控制台。
+    请不断使用NextMsg();向窗口发送消息以免窗口没有响应。
+    请勿长时间使用readln();delay();等延时语句以免窗口没有响应。
+    请使用SetFresh();设置刷新时间并使用WaitMsg();等待消息。
+ **********************************************************************
+    控制函数
+    NewThread();           新线程
+    Sound();               扬声器发音
+    Delay();               等待时间
+    窗口函数
+    CreateWin();           显示窗口
+    CloseWin();            关闭窗口
+    SetTitle();            设置窗口标题
+    SetFresh();            设置窗口刷新时间
+    GetTime();             获取窗口建立时间
+    GetWidth();            获取窗口宽度
+    GetHeight();           获取窗口高度
+    GetSize();             获取窗口大小
+    GetScrWidth();         获取屏幕宽度
+    GetScrHeight();        获取屏幕高度
+    GetScrSize();          获取屏幕大小
+    GetBorderTitle();      获取边标题框高度
+    GetBorderWidth();      获取边框宽度
+    GetBorderHeight();     获取边框高度
+    GetBorderSize();       获取边框大小
+    GetWinPosX();          获取窗口横坐标
+    GetWinPosY();          获取窗口纵坐标
+    GetHwnd();             获取窗口句柄
+    GetDraw();             获取绘图句柄
+    颜色函数
+    GetBGColor();          获取背景颜色
+    SetBGColor();          设置背景颜色
+    GetFGColor();          获取前景颜色
+    SetFGColor();          设置前景颜色
+    字体函数
+    SetFontWidth();        设置字体宽度
+    SetFontHeight();       设置字体长度
+    SetFontSize();         设置字体大小
+    SetFontWeight();       设置字体粗体
+    SetFontLtalic();       设置字体斜体
+    SetFontUnderLine();    设置字体下划线
+    SetFontStrikeOut();    设置字体删除线
+    SetFontCharSet();      设置字体字符集
+    SetFontName();         设置字体名称
+    GetStringSize();       获取文本大小
+    GetStringWidth();      获取文本宽度
+    GetStringHeight();     获取文本高度
+    文字输出函数
+    DrawText();            输出文本活动宽度
+    DrawTextln();          输出文本行活动宽度
+    DrawTextw();           输出文本固定宽度
+    DrawTextlnw();         输出文本行固定宽度
+    绘图函数
+    GetPixel();            获取点
+    SetPixel();            设置点
+    Line();                画线
+    Bar();                 画矩形
+    Ellipse();             画椭圆
+    Circle();              画圆
+    位图函数
+    LoadBMP();             读取位图
+    DrawBMP();             绘制位图
+    CopyBMP();             复制位图
+    ReleaseBMP();          释放位图
+    消息函数
+    PreesKey();            按下键盘按键
+    DownKey();             按住键盘按键
+    UpKey();               弹起键盘按键
+    PreesMouse();          按下鼠标按键
+    DownMouse();           按住鼠标按键
+    UpMouse();             弹起鼠标按键
+    WheelMouse();          滚动鼠标滚轮
+    MoveMouse();           移动鼠标相对
+    MoveMouseAbs();        移动鼠标绝对
+    MoveMouseWin();        移动鼠标窗口
+    MoveMousePos();        移动鼠标绘图
+    SendMsg();             发送消息
+    NextMsg();             下条消息
+    IsMsg();               判断消息
+    GetMsg();              获取消息
+    WaitMsg();             等待消息
+    IsKey();               判断键盘按键
+    GetKey();              获取键盘按键
+    WaitKey();             等待键盘按键
+    IsMouse();             判断鼠标按键
+    GetMouse();            获取鼠标按键
+    WaitMouse();           等待鼠标按键
+    IsMouseWheel();        判断鼠标滚轮按键
+    WaitMouseWheel();      等待鼠标滚轮按键
+    IsMouseMove();         判断鼠标移动
+    GetMouseMove();        获取鼠标移动
+    WaitMouseMove();       等待鼠标移动
+    IsDropFile();          判断拖拽文件
+    WaitDropFile();        等待拖拽文件
+    GetDropFile();         获取拖拽文件
+    GetMouseAbs();         获取鼠标绝对位置
+    GetMouseWin();         获取鼠标窗口位置
+    GetMousePos();         获取鼠标绘图位置
+    音频函数
+    LoadAudio();           读取音频
+    PlayAudio();           开始播放
+    StopAudio();           停止播放
+    PauseAudio();          暂停播放
+    ResumeAudio();         继续播放
+    GetAudioVol();         获取音量
+    SetAudioVol();         设置音量
+    GetAudioPos();         获取位置
+    SetAudioPos();         设置位置
+    GetAudioLen();         获取长度
+ **********************************************************************
+    参数  说明       类型           说明
+    x     左坐标     integer
+    y     上坐标     integer
+    w     宽度       integer
+    h     高度       integer
+    c     颜色       longword       AGBR（透明+蓝绿红）
+    cbg   背景颜色   longword       画刷颜色
+    cfg   前景颜色   longword       画笔颜色
+    pos   位置       longword       x*$10000+y
+    r     半径       integer
+    a     角度|弧度  integer|real   real=360*integer/2/pi
+    s     字符串     string         pchar=@s[1]
+    k     键盘按键   byte           详见key.inc
+    m     鼠标按键   byte           详见key.inc
+    t     时间       longword|real  real=longword/1000
+    hz    频率       longword
+    b     位图       pbitmap        详见type
+    v     音量       longword       0到1000
+ **********************************************************************)
+
+unit Display;
+
+interface // 接口
+
+uses Windows;
+
+// Const 常量
+
+const PI=3.1415926535897932384626433832795028841971694;
+{$I display_color.inc}
+{$I display_key.inc}
+const BUFFSIZE=4096;           //缓冲区大小
+const DELAYTIMEKEY=20;         //默认按键时长
+      DELAYTIMEDEFAULT=1000;   //默认等待时长
+      DELAYTIMEMIN=1;          //默认最短等待时长
+const FONTWIDTHDEFAULT=10;     //默认字体宽度
+      FONTHEIGHTDEFAULT=20;    //默认字体高度
+const MINHZ=100;               //最小频率
+      MAXHZ=15000;             //最大频率
+const _mdn:array[0..2] of longword=(MOUSEEVENTF_LEFTDOWN,MOUSEEVENTF_RIGHTDOWN,MOUSEEVENTF_MIDDLEDOWN);
+const _mup:array[0..2] of longword=(MOUSEEVENTF_LEFTUP,MOUSEEVENTF_RIGHTUP,MOUSEEVENTF_MIDDLEUP);
+const _bdn:array[0..2] of longword=(WM_LBUTTONDOWN,WM_MBUTTONDOWN,WM_RBUTTONDOWN);
+
+// Type 数据类型
+
+type bitmap=                 //位图类型
+       record
+       Handle:hbitmap;       //位图句柄
+       DC:hdc;               //位图屏幕
+       Width:longword;       //位图宽度
+       Height:longword;      //位图长度
+       Color:longword;       //位图背景颜色
+       FileName:string;      //位图文件名
+       end;
+type pbitmap=^bitmap;        //位图指针
+
+// Internal Variable 内部变量
+
+var _hz:longword;            //频率
+    _t:longword;             //时间
+
+var _tid:longword;           //线程句柄
+    _tbegin:longword;        //窗口建立时间
+
+var _hw:hWnd;                //窗口句柄
+    _dc:hDC;                 //绘图句柄
+
+var _w,_h,_x,_y:integer;     //窗口宽高坐标
+    _cbg,_cfg:longword;      //窗口背前景颜色
+
+var _wc:wndClass;            //窗口注册结构
+    _ms:msg;                 //消息结构
+    _main:bitmap;            //屏幕位图结构
+    _pmain:pbitmap;          //屏幕位图指针
+    _b:pbitmap;              //临时位图指针
+
+var _pe:hPen;                //画笔
+    _br:hBrush;              //画刷
+
+var _fx,_fy:integer;         //文字输出位置
+    _fw,_fh,_fwg:integer;    //字体长宽粗细
+    _flt,_fud,               //字体斜体下划线
+    _fsk,_fcs:longword;      //字体删除线字符集
+    _ffn:string;             //字体名称
+    _fns:hFont;              //字体结构
+    _strz:size;              //字符串大小
+
+var _fnm:longword=256;       //拖拽文件名长度
+    _fn:pchar;               //拖拽文件名
+
+var _cid:longword;           //全局音频标识符
+    _cam:longword=256;       //音频字符串长度
+    _ca:pchar;               //音频字符串
+
+// Functions Interface 函数接口
+
+function arcsin(x:real):real;inline;
+function arccos(x:real):real;inline;
+function max(x,y:longint):longint;inline;
+function min(x,y:longint):longint;inline;
+function i2s(i:longint):string;inline;
+function i2s(i:longword):string;inline;
+function s2pc(s:string):pchar;inline;
+function pc2i(pc:pchar):longword;inline;
+function i2t(i:longword):string;inline;
+
+function NewThread(th:pointer):longword;
+procedure Delay(t:longword);
+procedure Delay(t:real);
+procedure Delay();
+procedure Sound(hz:longword;t:longword);
+procedure Sound(hz:longword;t:real);
+procedure Sound(hz:longword);
+
+procedure CreateWin(w,h:integer;cfg,cbg:longword);
+procedure CreateWin(w,h:integer;c:longword);
+procedure CreateWin(w,h:integer);
+procedure CreateWin();
+procedure CloseWin();
+procedure SetTitle(s:string);
+procedure SetFresh(t:longword);
+function GetTime():longword;
+function GetWidth():integer;
+function GetHeight():integer;
+function GetSize():longword;
+function GetScrWidth():integer;
+function GetScrHeight():integer;
+function GetScrSize():longword;
+function GetBorderTitle():integer;
+function GetBorderWidth():integer;
+function GetBorderHeight():integer;
+function GetBorderSize():longword;
+function GetWinPosX():integer;
+function GetWinPosY():integer;
+function GetHwnd():longword;
+function GetDraw():longword;
+
+function GetBGColor():longword;
+procedure SetBGColor(c:longword);
+function GetFGColor():longword;
+procedure SetFGColor(c:longword);
+
+procedure SetFontWidth(w:integer);
+procedure SetFontHeight(h:integer);
+procedure SetFontSize(w,h:integer);
+procedure SetFontWeight(wg:integer);
+procedure SetFontLtalic(lt:longword);
+procedure SetFontUnderLine(ud:longword);
+procedure SetFontStrikeOut(sk:longword);
+procedure SetFontCharSet(cs:longword);
+procedure SetFontName(s:string);
+procedure GetStringSize(s:string);
+function GetStringWidth(s:string):longword;
+function GetStringHeight(s:string):longword;
+
+procedure DrawTextXY(s:string;x,y:integer;cfg,cbg:longword);
+procedure DrawTextXY(s:string;x,y:integer;c:longword);
+procedure DrawTextXY(s:string;x,y:integer);
+procedure DrawText(s:string;cfg,cbg:longword);
+procedure DrawText(s:string;c:longword);
+procedure DrawText(s:string);
+procedure DrawTextlnXY(s:string;x,y:integer;cfg,cbg:longword);
+procedure DrawTextlnXY(s:string;x,y:integer;c:longword);
+procedure DrawTextlnXY(s:string;x,y:integer);
+procedure DrawTextln(s:string;cfg,cbg:longword);
+procedure DrawTextln(s:string;c:longword);
+procedure DrawTextln(s:string);
+procedure DrawTextln();
+procedure DrawTextXYw(s:string;x,y:integer;cfg,cbg:longword);
+procedure DrawTextXYw(s:string;x,y:integer;c:longword);
+procedure DrawTextXYw(s:string;x,y:integer);
+procedure DrawTextw(s:string;cfg,cbg:longword);
+procedure DrawTextw(s:string;c:longword);
+procedure DrawTextw(s:string);
+procedure DrawTextlnXYw(s:string;x,y:integer;cfg,cbg:longword);
+procedure DrawTextlnXYw(s:string;x,y:integer;c:longword);
+procedure DrawTextlnXYw(s:string;x,y:integer);
+procedure DrawTextlnw(s:string;cfg,cbg:longword);
+procedure DrawTextlnw(s:string;c:longword);
+procedure DrawTextlnw(s:string);
+
+function GetPixel(x,y:integer):longword;
+procedure SetPixel(x,y:integer;c:longword);
+procedure SetPixel(x,y:integer);
+procedure Line(x,y,w,h:integer;c:longword);
+procedure Line(x,y,w,h:integer);
+procedure Bar(x,y,w,h:integer;cfg,cbg:longword);
+procedure Bar(x,y,w,h:integer;c:longword);
+procedure Bar(x,y,w,h:integer);
+procedure Ellipse(x,y,rx,ry:integer;sa,ea:real;cfg,cbg:longword);
+procedure Ellipse(x,y,rx,ry:integer;sa,ea:real;c:longword);
+procedure Ellipse(x,y,rx,ry:integer;sa,ea:real);
+procedure Ellipse(x,y,rx,ry:integer;sa,ea:integer;cfg,cbg:longword);
+procedure Ellipse(x,y,rx,ry:integer;sa,ea:integer;c:longword);
+procedure Ellipse(x,y,rx,ry:integer;sa,ea:integer);
+procedure Ellipse(x,y,rx,ry:integer;cfg,cbg:longword);
+procedure Ellipse(x,y,rx,ry:integer;c:longword);
+procedure Ellipse(x,y,rx,ry:integer);
+procedure Circle(x,y,r:integer;sa,ea:real;cfg,cbg:longword);
+procedure Circle(x,y,r:integer;sa,ea:real;c:longword);
+procedure Circle(x,y,r:integer;sa,ea:real);
+procedure Circle(x,y,r:integer;sa,ea:integer;cfg,cbg:longword);
+procedure Circle(x,y,r:integer;sa,ea:integer;c:longword);
+procedure Circle(x,y,r:integer;sa,ea:integer);
+procedure Circle(x,y,r:integer;cfg,cbg:longword);
+procedure Circle(x,y,r:integer;c:longword);
+procedure Circle(x,y,r:integer);
+
+function LoadBMP(s:string;c:longword):pbitmap;
+function LoadBMP(s:string):pbitmap;
+procedure DrawBMP(b:pbitmap;xs,ys,ws,hs,xd,yd,wd,hd:integer;c:longword);
+procedure DrawBMP(b:pbitmap;xs,ys,ws,hs,xd,yd,wd,hd:integer);
+procedure DrawBMP(b:pbitmap;xs,ys,xd,yd,w,h:integer;c:longword);
+procedure DrawBMP(b:pbitmap;xs,ys,xd,yd,w,h:integer);
+procedure DrawBMP(b:pbitmap;xd,yd,wd,hd:integer;c:longword);
+procedure DrawBMP(b:pbitmap;xd,yd,wd,hd:integer);
+procedure DrawBMP(b:pbitmap;xd,yd:integer;c:longword);
+procedure DrawBMP(b:pbitmap;xd,yd:integer);
+procedure DrawBMP(b:pbitmap;c:longword);
+procedure DrawBMP(b:pbitmap);
+procedure DrawBMP(xs,ys,ws,hs,xd,yd,wd,hd:integer;c:longword);
+procedure DrawBMP(xs,ys,ws,hs,xd,yd,wd,hd:integer);
+procedure DrawBMP(xs,ys,xd,yd,w,h:integer;c:longword);
+procedure DrawBMP(xs,ys,xd,yd,w,h:integer);
+procedure DrawBMP(xd,yd,wd,hd:integer;c:longword);
+procedure DrawBMP(xd,yd,wd,hd:integer);
+procedure DrawBMP(xd,yd:integer;c:longword);
+procedure DrawBMP(xd,yd:integer);
+procedure DrawBMP(c:longword);
+procedure DrawBMP();
+function CopyBMP(b:pbitmap;xs,ys,ws,hs,xd,yd,wd,hd:integer;c:longword):pbitmap;
+function CopyBMP(b:pbitmap;xs,ys,ws,hs,xd,yd,wd,hd:integer):pbitmap;
+function CopyBMP(b:pbitmap;xs,ys,xd,yd,w,h:integer;c:longword):pbitmap;
+function CopyBMP(b:pbitmap;xs,ys,xd,yd,w,h:integer):pbitmap;
+function CopyBMP(b:pbitmap;xd,yd,wd,hd:integer;c:longword):pbitmap;
+function CopyBMP(b:pbitmap;xd,yd,wd,hd:integer):pbitmap;
+function CopyBMP(b:pbitmap;xd,yd:integer;c:longword):pbitmap;
+function CopyBMP(b:pbitmap;xd,yd:integer):pbitmap;
+function CopyBMP(b:pbitmap;c:longword):pbitmap;
+function CopyBMP(b:pbitmap):pbitmap;
+function CopyBMP(xs,ys,ws,hs,xd,yd,wd,hd:integer;c:longword):pbitmap;
+function CopyBMP(xs,ys,ws,hs,xd,yd,wd,hd:integer):pbitmap;
+function CopyBMP(xs,ys,xd,yd,w,h:integer;c:longword):pbitmap;
+function CopyBMP(xs,ys,xd,yd,w,h:integer):pbitmap;
+function CopyBMP(xd,yd,wd,hd:integer;c:longword):pbitmap;
+function CopyBMP(xd,yd,wd,hd:integer):pbitmap;
+function CopyBMP(xd,yd:integer;c:longword):pbitmap;
+function CopyBMP(xd,yd:integer):pbitmap;
+function CopyBMP(c:longword):pbitmap;
+function CopyBMP():pbitmap;
+procedure ReleaseBMP(b:pbitmap);
+
+procedure PressKey(k:byte;t:longword);
+procedure PressKey(k:byte;t:real);
+procedure PressKey(k:byte);
+procedure DownKey(k:byte);
+procedure UpKey(k:byte);
+procedure PressMouse(m:byte;t:longword);
+procedure PressMouse(m:byte;t:real);
+procedure PressMouse(m:byte);
+procedure DownMouse(m:byte);
+procedure UpMouse(m:byte);
+procedure WheelMouse(wl:integer);
+procedure MoveMouse(x,y:integer);
+procedure MoveMouseAbs(x,y:integer);
+procedure MoveMouseWin(x,y:integer);
+procedure MoveMousePos(x,y:integer);
+procedure MoveMouse(pos:longword);
+procedure MoveMouseAbs(pos:longword);
+procedure MoveMouseWin(pos:longword);
+procedure MoveMousePos(pos:longword);
+procedure SendMsg();
+function NextMsg():boolean;
+function IsMsg(uM:array of longword):boolean;
+function GetMsg(uM:array of longword):qword;
+function WaitMsg(uM:array of longword):qword;
+function IsMsg(uM:longword):boolean;
+function GetMsg(uM:longword):qword;
+function WaitMsg(uM:longword):qword;
+function IsKey():boolean;
+function GetKey():longword;
+function WaitKey():longword;
+function IsKey(k:longword):boolean;
+procedure WaitKey(k:longword);
+function IsMouse():boolean;
+function GetMouse():longword;
+function WaitMouse():longword;
+function IsMouse(m:longword):boolean;
+procedure WaitMouse(m:longword);
+function IsMouseLeft():boolean;
+procedure WaitMouseLeft();
+function IsMouseMiddle():boolean;
+procedure WaitMouseMiddle();
+function IsMouseRight():boolean;
+procedure WaitMouseRight();
+function IsMouseWheel():boolean;
+procedure WaitMouseWheel();
+function IsMouseMove():boolean;
+function GetMouseMove():longword;
+function WaitMouseMove():longword;
+function IsDropFile():boolean;
+function GetDropFile():string;
+function WaitDropFile():string;
+function GetMouseAbsX():integer;
+function GetMouseWinX():integer;
+function GetMousePosX():integer;
+function GetMouseAbsY():integer;
+function GetMouseWinY():integer;
+function GetMousePosY():integer;
+
+function LoadAudio(s:string):longword;
+procedure PlayAudio(id:longword;command:string);
+procedure PlayAudio(id:longword);
+procedure StopAudio(id:longword);
+procedure PauseAudio(id:longword);
+procedure ResumeAudio(id:longword);
+procedure ReleaseAudio(id:longword);
+function GetAudioVol(id:longword):longword;
+procedure SetAudioVol(id:longword;v:longword);
+function GetAudioPos(id:longword):longword;
+procedure SetAudioPos(id:longword;pos:longword);
+function GetAudioLen(id:longword):longword;
+
+implementation // 实现
+
+// External Function 外部函数（Windows API）
+
+function mciSendString(
+lpszCommand:LPCTSTR;
+lpszReturnString:LPTSTR;
+cchReturn:LONGWORD;
+hwndCallback:HANDLE)
+:DWORD;cdecl;
+external 'winmm.dll'
+name 'mciSendStringA';
+
+function timeGetTime()
+:longword;cdecl;
+external 'winmm.dll';
+
+function TransparentBlt(
+hdcd:HDC;xd,yd,wd,hd:longint;
+hdcs:HDC;xs,ys,ws,hs:longint;
+c:longword):DWORD;cdecl;
+external 'Msimg32.dll';
+
+// Inline Function 内联函数
+
+function arcsin(x:real):real;inline;
+begin arcsin:=2*arctan(x/(1+sqrt(1-x*x)));end;
+function arccos(x:real):real;inline;
+begin arccos:=pi/2-arcsin(x);end;
+function max(x,y:longint):longint;inline;
+begin if x>y then max:=x else max:=y;end;
+function min(x,y:longint):longint;inline;
+begin if x<y then min:=x else min:=y;end;
+function i2s(i:longint):string;inline;
+begin str(i,i2s);end;
+function i2s(i:longword):string;inline;
+begin str(i,i2s);end;
+function s2pc(s:string):pchar;inline;
+begin s:=s+#0;s2pc:=@s[1];end;
+function pc2i(pc:pchar):longword;inline;var i:longword;
+begin pc2i:=0;i:=0;while pc[i]<>#0 do begin
+pc2i:=pc2i*10+ord(pc[i])-48;i:=i+1;end;end;
+function i2t(i:longword):string;inline;var h,m,s,ss:longword;
+begin ss:=i mod 1000;s:=i div 1000;m:=s div 60;s:=s mod 60;h:=m div 60;m:=m mod 60;
+i2t:=i2s(m div 10)+i2s(m mod 10)+':'+i2s(s div 10)+i2s(s mod 10)
++'.'+i2s(ss div 100)+i2s(ss div 10 mod 10)+i2s(ss mod 10);end;
+
+// Internal Function 内部函数
+function SendString(s:string):longword;
+begin
+getmem(_ca,_cam);
+mciSendString(s2pc(s),_ca,_cam,0);
+SendString:=pc2i(_ca);
+end;
+
+function WndProc(hW:HWnd;uM:Uint;wP:WParam;lP:LParam):LResult;stdcall;
+var ps:PAINTSTRUCT;
+begin
+WndProc:=0;
+case uM of
+WM_CREATE:
+begin
+SetFontSize(FONTWIDTHDEFAULT,FONTHEIGHTDEFAULT);
+_tbegin:=GetTime();
+DragAcceptFiles(hW,true);
+end;
+WM_PAINT:begin BeginPaint(_hw, &ps);EndPaint(_hw, &ps);end;
+WM_SIZE:begin _w:=lP mod $10000;_h:=lP div $10000;end;
+WM_CLOSE:halt();
+//WM_KEYDOWN:if wP=K_ESCAPE then halt();
+//WM_DESTROY:halt();
+else WndProc:=DefWindowProc(hW,uM,wP,lP);
+end;
+end;
+
+function WinRegister():ATOM;
+begin
+with _wc do
+begin
+style:=CS_HREDRAW or CS_VREDRAW;
+lpfnWndProc:=@WndProc;
+cbClsExtra:=0;
+cbWndExtra:=0;
+hInstance:=MainInstance;
+hIcon:=LoadIcon(MainInstance,IDI_APPLICATION);
+hCursor:=LoadCursor(MainInstance,IDC_ARROW);
+hbrBackground:=GetStockObject(WHITE_BRUSH);
+lpszMenuName:=nil;
+lpszClassName:='CreateWin';
+end;
+WinRegister:=RegisterClass(_wc);
+end;
+
+function WinCreate():HWND;
+begin
+_w:=_w+GetBorderWidth()*2;
+_h:=_h+GetBorderHeight()*2+GetBorderTitle();
+_hw:=CreateWindow(
+'CreateWin','Display unit default title',
+WS_SYSMENU or WS_SIZEBOX,
+_x,_y,_w,_h,
+0,0,MainInstance,nil);
+if _hw<>0 then
+begin ShowWindow(_hw,SW_SHOW);UpdateWindow(_hw);end;
+WinCreate:=_hw;
+end;
+
+procedure WinInit();
+begin
+WinRegister;
+WinCreate;
+_dc:=GetDC(_hw);
+_main.Handle:=_hw;
+_main.DC:=_dc;
+_main.Width:=_w;
+_main.Height:=_h;
+_pmain:=@_main;
+end;
+
+// Unit Function 单元库函数
+
+function NewThread(th:pointer):longword;
+begin _tid:=_tid+1;NewThread:=CreateThread(nil,0,th,nil,0,_tid);end;
+procedure Delay(t:longword);var TimeOld:longword;
+begin TimeOld:=GetTime();repeat NextMsg();until GetTime()>TimeOld+t;end;
+procedure Delay(t:real);
+begin Delay(longword(round(t*1000)));end;
+procedure Delay();
+begin Delay(DELAYTIMEDEFAULT);end;
+procedure Sound(hz:longword;t:longword);
+begin if (hz<MINHZ) or (hz>MAXHZ) then Delay(t) else Windows.Beep(hz,t);end;
+procedure Sound(hz:longword;t:real);
+begin Sound(hz,longword(round(t*1000)));end;
+procedure Sound(hz:longword);
+begin Sound(hz,DELAYTIMEDEFAULT);end;
+
+procedure CreateWin(w,h:integer;cfg,cbg:longword);
+begin
+_w:=w;
+_h:=h;
+_x:=(GetScrWidth()-_w) div 2;
+_y:=(GetScrHeight()-_h) div 2;
+_cbg:=cbg;
+_cfg:=cfg;
+WinInit();
+SetBkMode(_dc,TRANSPARENT);
+Bar(0,0,w,h,cfg,cbg);
+end;
+procedure CreateWin(w,h:integer;c:longword);
+begin CreateWin(w,h,$FFFFFF,c);end;
+procedure CreateWin(w,h:integer);
+begin CreateWin(w,h,0);end;
+procedure CreateWin();
+begin CreateWin(GetScrWidth() div 2,GetScrHeight() div 2);end;
+procedure CloseWin();
+begin ReleaseBMP(_pmain);DestroyWindow(_hw);end;
+procedure SetTitle(s:string);
+begin SetWindowText(_hw,s2pc(s));end;
+procedure SetFresh(t:longword);
+begin SetTimer(_hw,0,t,nil);end;
+function GetTime():longword;
+begin GetTime:=timeGetTime();
+if GetTime>=_tbegin then GetTime:=GetTime-_tbegin
+else GetTime:=$100000000-_tbegin+GetTime;end;
+function GetWidth():integer;
+begin GetWidth:=_w;end;
+function GetHeight():integer;
+begin GetHeight:=_h;end;
+function GetSize():longword;
+begin GetSize:=GetWidth()*$10000+GetHeight();end;
+function GetScrWidth():integer;
+begin GetScrWidth:=GetSystemMetrics(SM_CXSCREEN);end;
+function GetScrHeight():integer;
+begin GetScrHeight:=GetSystemMetrics(SM_CYSCREEN);end;
+function GetScrSize():longword;
+begin GetScrSize:=GetScrWidth()*$10000+GetScrHeight();end;
+function GetBorderTitle():integer;
+begin GetBorderTitle:=GetSystemMetrics(SM_CYCAPTION);end;
+function GetBorderWidth():integer;
+begin GetBorderWidth:=GetSystemMetrics(SM_CXFRAME);end;
+function GetBorderHeight():integer;
+begin GetBorderHeight:=GetSystemMetrics(SM_CYFRAME);end;
+function GetBorderSize():longword;
+begin GetBorderSize:=GetBorderWidth()*$10000+GetBorderHeight();end;
+function GetWinPosX():integer;var rt:RECT;
+begin GetWindowRect(_hw,rt);GetWinPosX:=rt.Left;end;
+function GetWinPosY():integer;var rt:RECT;
+begin GetWindowRect(_hw,rt);GetWinPosY:=rt.Top;end;
+function GetHwnd():longword;
+begin GetHwnd:=_hw;end;
+function GetDraw():longword;
+begin GetDraw:=_dc;end;
+
+function GetBGColor():longword;
+begin GetBGColor:=_cbg;end;
+procedure SetBGColor(c:longword);
+begin _cbg:=c;end;
+function GetFGColor():longword;
+begin GetFGColor:=_cfg;end;
+procedure SetFGColor(c:longword);
+begin _cfg:=c;end;
+procedure SetPenColor(c:longword);
+begin
+DeleteObject(_pe);
+if c=TRANSPARENT then _pe:=GetStockObject(NULL_PEN)
+else _pe:=CreatePen(PS_SOLID,1,c);
+SelectObject(_dc,_pe);
+end;
+procedure SetBrushColor(c:longword);
+begin
+DeleteObject(_br);
+if c=TRANSPARENT then _br:=GetStockObject(NULL_BRUSH)
+else _br:=CreateSolidBrush(c);
+SelectObject(_dc,_br);
+end;
+
+procedure SetFont();
+begin
+DeleteObject(_fns);
+_fns:=CreateFont(
+_fh,_fw,0,0,_fwg,
+_flt,_fud,_fsk,_fcs,
+OUT_DEFAULT_PRECIS,
+ClIP_DEFAULT_PRECIS,
+DEFAULT_QUALITY,
+FF_DONTCARE,
+s2pc(_ffn));
+SelectObject(_dc,_fns);
+end;
+procedure SetFontWidth(w:integer);
+begin _fw:=w;SetFont();end;
+procedure SetFontHeight(h:integer);
+begin _fh:=h;SetFont();end;
+procedure SetFontSize(w,h:integer);
+begin _fh:=h;_fw:=w;SetFont();end;
+procedure SetFontWeight(wg:integer);
+begin _fwg:=wg;SetFont();end;
+procedure SetFontLtalic(lt:longword);
+begin _flt:=lt;SetFont();end;
+procedure SetFontUnderLine(ud:longword);
+begin _fud:=ud;SetFont();end;
+procedure SetFontStrikeOut(sk:longword);
+begin _fsk:=sk;SetFont();end;
+procedure SetFontCharSet(cs:longword);
+begin _fcs:=cs;SetFont();end;
+procedure SetFontName(s:string);
+begin _ffn:=s;SetFont();end;
+procedure GetStringSize(s:string);
+begin GetTextExtentPoint(_dc,s2pc(s),length(s),_strz);end;
+function GetStringWidth(s:string):longword;
+begin GetStringSize(s);GetStringWidth:=_strz.cx;end;
+function GetStringHeight(s:string):longword;
+begin GetStringSize(s);GetStringHeight:=_strz.cy;end;
+
+procedure DrawTextXY(s:string;x,y:integer;cfg,cbg:longword);
+begin SetBkColor(_dc,cbg);SetBkMode(_dc,OPAQUE);DrawTextXY(s,x,y,cfg);SetBkMode(_dc,TRANSPARENT);end;
+procedure DrawTextXY(s:string;x,y:integer;c:longword);
+begin
+SetTextColor(_dc,c);
+TextOut(_dc,x,y,s2pc(s),length(s));
+_fx:=x+GetStringWidth(s);
+end;
+procedure DrawTextXY(s:string;x,y:integer);
+begin DrawTextXY(s,x,y,_cfg);end;
+procedure DrawText(s:string;cfg,cbg:longword);
+begin DrawTextXY(s,_fx,_fy,cfg,cbg);end;
+procedure DrawText(s:string;c:longword);
+begin DrawTextXY(s,_fx,_fy,c);end;
+procedure DrawText(s:string);
+begin DrawTextXY(s,_fx,_fy);end;
+procedure DrawTextlnXY(s:string;x,y:integer;cfg,cbg:longword);
+begin DrawTextXY(s,x,y,cfg,cbg);_fx:=0;_fy:=y+GetStringHeight(s);end;
+procedure DrawTextlnXY(s:string;x,y:integer;c:longword);
+begin DrawTextXY(s,x,y,c);_fx:=0;_fy:=y+_fh;end;
+procedure DrawTextlnXY(s:string;x,y:integer);
+begin DrawTextlnXY(s,x,y,_cfg);end;
+procedure DrawTextln(s:string;cfg,cbg:longword);
+begin DrawTextlnXY(s,_fx,_fy,cfg,cbg);end;
+procedure DrawTextln(s:string;c:longword);
+begin DrawTextlnXY(s,_fx,_fy,c);end;
+procedure DrawTextln(s:string);
+begin DrawTextlnXY(s,_fx,_fy);end;
+procedure DrawTextln();
+begin DrawTextln('');end;
+procedure DrawTextXYw(s:string;x,y:integer;cfg,cbg:longword);
+begin
+SetBkColor(_dc,cbg);SetBkMode(_dc,OPAQUE);
+DrawTextXYw(s,x,y,cfg);SetBkMode(_dc,TRANSPARENT);
+end;
+procedure DrawTextXYw(s:string;x,y:integer;c:longword);
+var fi:byte;
+begin
+SetTextColor(_dc,c);
+_fx:=x;
+for fi:=1 to length(s) do
+begin TextOut(_dc,_fx,y,@s[fi],1);_fx:=_fx+GetStringWidth(s[fi]);end;
+end;
+procedure DrawTextXYw(s:string;x,y:integer);
+begin DrawTextXYw(s,x,y,_cfg);end;
+procedure DrawTextw(s:string;cfg,cbg:longword);
+begin DrawTextXYw(s,_fx,_fy,cfg,cbg);end;
+procedure DrawTextw(s:string;c:longword);
+begin DrawTextXYw(s,_fx,_fy,c);end;
+procedure DrawTextw(s:string);
+begin DrawTextXYw(s,_fx,_fy);end;
+procedure DrawTextlnXYw(s:string;x,y:integer;cfg,cbg:longword);
+begin DrawTextXYw(s,x,y,cfg,cbg);_fx:=0;_fy:=y+GetStringHeight(s);end;
+procedure DrawTextlnXYw(s:string;x,y:integer;c:longword);
+begin DrawTextXYw(s,x,y,c);_fx:=0;_fy:=y+_fh;end;
+procedure DrawTextlnXYw(s:string;x,y:integer);
+begin DrawTextlnXYw(s,x,y,_cfg);end;
+procedure DrawTextlnw(s:string;cfg,cbg:longword);
+begin DrawTextlnXYw(s,_fx,_fy,cfg,cbg);end;
+procedure DrawTextlnw(s:string;c:longword);
+begin DrawTextlnXYw(s,_fx,_fy,c);end;
+procedure DrawTextlnw(s:string);
+begin DrawTextlnXYw(s,_fx,_fy);end;
+
+function GetPixel(x,y:integer):longword;
+begin GetPixel:=Windows.GetPixel(_dc,x,y);end;
+procedure SetPixel(x,y:integer;c:longword);
+begin Windows.SetPixel(_dc,x,y,c);end;
+procedure SetPixel(x,y:integer);
+begin SetPixel(x,y,_cfg);end;
+procedure Line(x,y,w,h:integer;c:longword);
+begin
+SetPenColor(c);
+Windows.MoveToEx(_dc,x,y,nil);
+Windows.LineTo(_dc,x+w,y+h);
+end;
+procedure Line(x,y,w,h:integer);
+begin Line(x,y,w,h,_cfg);end;
+procedure Bar(x,y,w,h:integer;c:longword);
+var lpRect:RECT;
+begin
+SetBrushColor(c);
+lpRect.left:=x;
+lpRect.top:=y;
+lpRect.right:=x+w;
+lpRect.bottom:=y+h;
+Windows.FillRect(_dc,lpRect,_br);
+end;
+procedure Bar(x,y,w,h:integer;cfg,cbg:longword);
+begin
+if cfg<>Transparent then Bar(x,y,w,h,cfg);
+Line(x,y,w,0,cbg);
+Line(x+w,y,0,h,cbg);
+Line(x+w,y+h,-w,0,cbg);
+Line(x,y+h,0,-h,cbg);
+end;
+procedure Bar(x,y,w,h:integer);
+begin Bar(x,y,w,h,_cfg);end;
+procedure Ellipse(x,y,rx,ry:integer;sa,ea:real;cfg,cbg:longword);
+begin
+SetPenColor(cfg);
+SetBrushColor(cbg);
+Windows.Pie(_dc,x-rx,y-ry,x+rx,y+ry,
+x+round(cos(sa)*rx),y+round(sin(sa)*ry),
+x+round(cos(ea)*rx),y+round(sin(ea)*ry));
+end;
+procedure Ellipse(x,y,rx,ry:integer;sa,ea:real;c:longword);
+begin Ellipse(x,y,rx,ry,sa,ea,c,TRANSPARENT);end;
+procedure Ellipse(x,y,rx,ry:integer;sa,ea:real);
+begin Ellipse(x,y,rx,ry,sa,ea,_cfg);end;
+procedure Ellipse(x,y,rx,ry:integer;sa,ea:integer;cfg,cbg:longword);
+begin Ellipse(x,y,rx,ry,2*pi*sa/360,2*pi*ea/360,cfg,cbg);end;
+procedure Ellipse(x,y,rx,ry:integer;sa,ea:integer;c:longword);
+begin Ellipse(x,y,rx,ry,2*pi*sa/360,2*pi*ea/360,c);end;
+procedure Ellipse(x,y,rx,ry:integer;sa,ea:integer);
+begin Ellipse(x,y,rx,ry,2*pi*sa/360,2*pi*ea/360);end;
+procedure Ellipse(x,y,rx,ry:integer;cfg,cbg:longword);
+begin Ellipse(x,y,rx,ry,0,2*pi,cfg,cbg);end;
+procedure Ellipse(x,y,rx,ry:integer;c:longword);
+begin Ellipse(x,y,rx,ry,0,2*pi,c);end;
+procedure Ellipse(x,y,rx,ry:integer);
+begin Ellipse(x,y,rx,ry,0,2*pi);end;
+procedure Circle(x,y,r:integer;sa,ea:real;cfg,cbg:longword);
+begin Ellipse(x,y,r,r,sa,ea,cfg,cbg);end;
+procedure Circle(x,y,r:integer;sa,ea:real;c:longword);
+begin Ellipse(x,y,r,r,sa,ea,c);end;
+procedure Circle(x,y,r:integer;sa,ea:real);
+begin Ellipse(x,y,r,r,sa,ea);end;
+procedure Circle(x,y,r:integer;sa,ea:integer;cfg,cbg:longword);
+begin Ellipse(x,y,r,r,sa,ea,cfg,cbg);end;
+procedure Circle(x,y,r:integer;sa,ea:integer;c:longword);
+begin Ellipse(x,y,r,r,sa,ea,c);end;
+procedure Circle(x,y,r:integer;sa,ea:integer);
+begin Ellipse(x,y,r,r,sa,ea);end;
+procedure Circle(x,y,r:integer;cfg,cbg:longword);
+begin Ellipse(x,y,r,r,cfg,cbg);end;
+procedure Circle(x,y,r:integer;c:longword);
+begin Ellipse(x,y,r,r,c);end;
+procedure Circle(x,y,r:integer);
+begin Ellipse(x,y,r,r);end;
+
+function LoadBMP(s:string;c:longword):pbitmap;
+begin LoadBMP:=LoadBMP(s);LoadBMP^.Color:=c;end;
+function LoadBMP(s:string):pbitmap;
+var fbmp:file of word;w,h,c:word;b:bitmap;
+begin
+LoadBMP:=getmem(BUFFSIZE);
+LoadBMP^.FileName:=s;
+assign(fbmp,s);
+reset(fbmp);
+seek(fbmp,$09);read(fbmp,w);LoadBMP^.Width:=w;read(fbmp,w);LoadBMP^.Width:=LoadBMP^.Width+w*$10000;
+seek(fbmp,$0B);read(fbmp,h);LoadBMP^.Height:=h;read(fbmp,h);LoadBMP^.Height:=LoadBMP^.Height+h*$10000;
+seek(fbmp,$19);read(fbmp,c);LoadBMP^.Color:=c;read(fbmp,c);LoadBMP^.Color:=LoadBMP^.Color+c*$10000;
+close(fbmp);
+LoadBMP^.Handle:=LoadImage(0,s2pc(s),IMAGE_BITMAP,0,0,LR_LOADFROMFILE);
+LoadBMP^.DC:=CreateCompatibleDC(_dc);
+SelectObject(LoadBMP^.DC,LoadBMP^.Handle);
+end;
+
+procedure DrawBMP(b:pbitmap;xs,ys,ws,hs,xd,yd,wd,hd:integer;c:longword);
+begin
+TransparentBlt(_pmain^.DC,xd,yd,wd,hd,b^.DC,xs,ys,ws,hs,c);
+end;
+procedure DrawBMP(b:pbitmap;xs,ys,ws,hs,xd,yd,wd,hd:integer);
+begin DrawBMP(b,xs,ys,ws,hs,xd,yd,wd,hd,b^.Color);end;
+procedure DrawBMP(b:pbitmap;xs,ys,xd,yd,w,h:integer;c:longword);
+begin DrawBMP(b,xs,ys,w,h,xd,yd,w,h,c);end;
+procedure DrawBMP(b:pbitmap;xs,ys,xd,yd,w,h:integer);
+begin DrawBMP(b,xs,ys,xd,yd,w,h,b^.Color);end;
+procedure DrawBMP(b:pbitmap;xd,yd,wd,hd:integer;c:longword);
+begin DrawBMP(b,0,0,xd,yd,wd,hd,c);end;
+procedure DrawBMP(b:pbitmap;xd,yd,wd,hd:integer);
+begin DrawBMP(b,xd,yd,wd,hd,b^.Color);end;
+procedure DrawBMP(b:pbitmap;xd,yd:integer;c:longword);
+begin DrawBMP(b,xd,yd,b^.Width,b^.Height,c);end;
+procedure DrawBMP(b:pbitmap;xd,yd:integer);
+begin DrawBMP(b,xd,yd,b^.Color);end;
+procedure DrawBMP(b:pbitmap;c:longword);
+begin DrawBMP(b,0,0,c);end;
+procedure DrawBMP(b:pbitmap);
+begin DrawBMP(b,b^.Color);end;
+procedure DrawBMP(xs,ys,ws,hs,xd,yd,wd,hd:integer;c:longword);
+begin DrawBMP(_pmain,xs,ys,ws,hs,xd,yd,wd,hd,c);end;
+procedure DrawBMP(xs,ys,ws,hs,xd,yd,wd,hd:integer);
+begin DrawBMP(_pmain,xs,ys,ws,hs,xd,yd,wd,hd);end;
+procedure DrawBMP(xs,ys,xd,yd,w,h:integer;c:longword);
+begin DrawBMP(_pmain,xs,ys,xd,yd,w,h,c);end;
+procedure DrawBMP(xs,ys,xd,yd,w,h:integer);
+begin DrawBMP(_pmain,xs,ys,xd,yd,w,h);end;
+procedure DrawBMP(xd,yd,wd,hd:integer;c:longword);
+begin DrawBMP(_pmain,xd,yd,wd,hd,c);end;
+procedure DrawBMP(xd,yd,wd,hd:integer);
+begin DrawBMP(_pmain,xd,yd,wd,hd);end;
+procedure DrawBMP(xd,yd:integer;c:longword);
+begin DrawBMP(_pmain,xd,yd,c);end;
+procedure DrawBMP(xd,yd:integer);
+begin DrawBMP(_pmain,xd,yd);end;
+procedure DrawBMP(c:longword);
+begin DrawBMP(_pmain,c);end;
+procedure DrawBMP();
+begin DrawBMP(_pmain);end;
+
+function CopyBMP(b:pbitmap;xs,ys,ws,hs,xd,yd,wd,hd:integer;c:longword):pbitmap;
+begin
+CopyBMP:=getmem(BUFFSIZE);
+CopyBMP^.Handle:=CopyImage(b^.Handle,IMAGE_BITMAP,0,0,LR_COPYRETURNORG);
+if CopyBMP^.Handle=0 then
+  CopyBMP^.Handle:=CreateCompatibleBitmap(b^.DC,b^.Width,b^.Height);
+CopyBMP^.DC:=CreateCompatibleDC(b^.DC);
+SelectObject(CopyBMP^.DC,CopyBMP^.Handle);
+TransparentBlt(CopyBMP^.DC,xd,yd,wd,hd,b^.DC,xs,ys,ws,hs,c);
+CopyBMP^.Width:=wd;
+CopyBMP^.Height:=hd;
+CopyBMP^.Color:=c;
+end;
+function CopyBMP(b:pbitmap;xs,ys,ws,hs,xd,yd,wd,hd:integer):pbitmap;
+begin CopyBMP:=CopyBMP(b,xs,ys,ws,hs,xd,yd,wd,hd,b^.Color);end;
+function CopyBMP(b:pbitmap;xs,ys,xd,yd,w,h:integer;c:longword):pbitmap;
+begin CopyBMP:=CopyBMP(b,xs,ys,w,h,xd,yd,w,h,c);end;
+function CopyBMP(b:pbitmap;xs,ys,xd,yd,w,h:integer):pbitmap;
+begin CopyBMP:=CopyBMP(b,xs,ys,xd,yd,w,h,b^.Color);end;
+function CopyBMP(b:pbitmap;xd,yd,wd,hd:integer;c:longword):pbitmap;
+begin CopyBMP:=CopyBMP(b,0,0,xd,yd,wd,hd,c);end;
+function CopyBMP(b:pbitmap;xd,yd,wd,hd:integer):pbitmap;
+begin CopyBMP:=CopyBMP(b,xd,yd,wd,hd,b^.Color);end;
+function CopyBMP(b:pbitmap;xd,yd:integer;c:longword):pbitmap;
+begin CopyBMP:=CopyBMP(b,xd,yd,b^.Width,b^.Height,c);end;
+function CopyBMP(b:pbitmap;xd,yd:integer):pbitmap;
+begin CopyBMP:=CopyBMP(b,xd,yd,b^.Color);end;
+function CopyBMP(b:pbitmap;c:longword):pbitmap;
+begin CopyBMP:=CopyBMP(b,0,0,c);end;
+function CopyBMP(b:pbitmap):pbitmap;
+begin CopyBMP:=CopyBMP(b,b^.Color);end;
+function CopyBMP(xs,ys,ws,hs,xd,yd,wd,hd:integer;c:longword):pbitmap;
+begin CopyBMP:=CopyBMP(_pmain,xs,ys,ws,hs,xd,yd,wd,hd,c);end;
+function CopyBMP(xs,ys,ws,hs,xd,yd,wd,hd:integer):pbitmap;
+begin CopyBMP:=CopyBMP(_pmain,xs,ys,ws,hs,xd,yd,wd,hd);end;
+function CopyBMP(xs,ys,xd,yd,w,h:integer;c:longword):pbitmap;
+begin CopyBMP:=CopyBMP(_pmain,xs,ys,xd,yd,w,h,c);end;
+function CopyBMP(xs,ys,xd,yd,w,h:integer):pbitmap;
+begin CopyBMP:=CopyBMP(_pmain,xs,ys,xd,yd,w,h);end;
+function CopyBMP(xd,yd,wd,hd:integer;c:longword):pbitmap;
+begin CopyBMP:=CopyBMP(_pmain,xd,yd,wd,hd,c);end;
+function CopyBMP(xd,yd,wd,hd:integer):pbitmap;
+begin CopyBMP:=CopyBMP(_pmain,xd,yd,wd,hd);end;
+function CopyBMP(xd,yd:integer;c:longword):pbitmap;
+begin CopyBMP:=CopyBMP(_pmain,xd,yd,c);end;
+function CopyBMP(xd,yd:integer):pbitmap;
+begin CopyBMP:=CopyBMP(_pmain,xd,yd);end;
+function CopyBMP(c:longword):pbitmap;
+begin CopyBMP:=CopyBMP(_pmain,c);end;
+function CopyBMP():pbitmap;
+begin CopyBMP:=CopyBMP(_pmain);end;
+procedure ReleaseBMP(b:pbitmap);
+begin DeleteObject(b^.Handle);ReleaseDC(b^.Handle,b^.DC);end;
+
+procedure PressMouse(m:byte;t:longword);
+begin DownMouse(m);Delay(t);UpMouse(m);end;
+procedure PressMouse(m:byte;t:real);
+begin DownMouse(m);Delay(t);UpMouse(m);end;
+procedure PressMouse(m:byte);
+begin PressMouse(m,DELAYTIMEKEY);end;
+procedure DownMouse(m:byte);
+begin mouse_event(_mdn[m],0,0,0,0);end;
+procedure UpMouse(m:byte);
+begin mouse_event(_mup[m],0,0,0,0);end;
+procedure MoveMouse(x,y:integer);
+begin MoveMouseAbs(x+GetMouseAbsX,y+GetMouseAbsY);end;
+procedure MoveMouseAbs(x,y:integer);
+begin SetCursorPos(x,y);end;
+procedure MoveMouseWin(x,y:integer);
+begin MoveMouseAbs(x+GetWinPosX,y+GetWinPosY);end;
+procedure MoveMousePos(x,y:integer);
+begin MoveMouseWin(x+GetBorderWidth,y+GetBorderHeight+GetBorderTitle);end;
+procedure MoveMouse(pos:longword);
+begin MoveMouse(pos div $10000,pos mod $10000);end;
+procedure MoveMouseWin(pos:longword);
+begin MoveMouseWin(pos div $10000,pos mod $10000);end;
+procedure MoveMouseAbs(pos:longword);
+begin MoveMouseAbs(pos div $10000,pos mod $10000);end;
+procedure MoveMousePos(pos:longword);
+begin MoveMousePos(pos div $10000,pos mod $10000);end;
+procedure WheelMouse(wl:integer);
+begin mouse_event($0800,0,0,dword(wl),0);end;
+procedure PressKey(k:byte;t:longword);
+begin DownKey(k);Delay(t);UpKey(k);end;
+procedure PressKey(k:byte;t:real);
+begin DownKey(k);Delay(t);UpKey(k);end;
+procedure PressKey(k:byte);
+begin PressKey(k,DELAYTIMEKEY);end;
+procedure DownKey(k:byte);
+begin keybd_event(k,MapVirtualKey(k,0),0,0);end;
+procedure UpKey(k:byte);
+begin keybd_event(k,MapVirtualKey(k,0),2,0);end;
+procedure SendMsg();
+begin TranslateMessage(_ms);DispatchMessage(_ms);end;
+function NextMsg():boolean;
+begin NextMsg:=GetMessage(_ms,0,0,0);SendMsg();end;
+function IsMsg(uM:array of longword):boolean;
+var mi:integer;
+begin
+IsMsg:=false;
+for mi:=0 to length(uM)-1 do
+if _ms.message=uM[mi] then IsMsg:=true;
+end;
+function GetMsg(uM:array of longword):qword;
+begin
+if not IsMsg(uM) then GetMsg:=0
+else GetMsg:=_ms.wParam*$100000000+_ms.lParam;
+end;
+function WaitMsg(uM:array of longword):qword;
+begin
+repeat NextMsg() until IsMsg(uM);
+WaitMsg:=_ms.wParam*$100000000+_ms.lParam;
+end;
+function IsMsg(uM:longword):boolean;
+begin IsMsg:=IsMsg([uM]);end;
+function GetMsg(uM:longword):qword;
+begin GetMsg:=GetMsg([uM]);end;
+function WaitMsg(uM:longword):qword;
+begin WaitMsg:=WaitMsg([uM]);end;
+function IsKey():boolean;
+begin IsKey:=IsMsg(WM_KEYDOWN);end;
+function GetKey():longword;
+begin GetKey:=GetMsg(WM_KEYDOWN) div $100000000;end;
+function WaitKey():longword;
+begin WaitKey:=WaitMsg(WM_KEYDOWN) div $100000000;end;
+function IsKey(k:longword):boolean;
+begin if IsKey() and (GetKey()=k) then IsKey:=true else IsKey:=false;end;
+procedure WaitKey(k:longword);
+begin repeat until WaitKey()=k;end;
+function IsMouse():boolean;
+begin IsMouse:=IsMsg(_bdn);end;
+function GetMouse():longword;
+begin GetMouse:=GetMsg(_bdn) div $100000000;end;
+function WaitMouse():longword;
+begin WaitMouse:=WaitMsg(_bdn) div $100000000;end;
+function IsMouse(m:longword):boolean;
+begin if IsMouse() and (GetMouse=m) then IsMouse:=true else IsMouse:=false;end;
+procedure WaitMouse(m:longword);
+begin repeat until WaitMouse()=m;end;
+function IsMouseLeft():boolean;
+begin IsMouseLeft:=IsMsg(WM_LBUTTONDOWN);end;
+procedure WaitMouseLeft();
+begin WaitMsg(WM_LBUTTONDOWN);end;
+function IsMouseMiddle():boolean;
+begin IsMouseMiddle:=IsMsg(WM_MBUTTONDOWN);end;
+procedure WaitMouseMiddle();
+begin WaitMsg(WM_MBUTTONDOWN);end;
+function IsMouseRight():boolean;
+begin IsMouseRight:=IsMsg(WM_RBUTTONDOWN);end;
+procedure WaitMouseRight();
+begin WaitMsg(WM_RBUTTONDOWN);end;
+function IsMouseWheel():boolean;
+begin IsMouseWheel:=IsMsg(WM_MOUSEWHEEL);end;
+procedure WaitMouseWheel();
+begin WaitMsg(WM_MOUSEWHEEL);end;
+function IsMouseMove():boolean;
+begin IsMouseMove:=IsMsg(WM_MOUSEMOVE);end;
+function GetMouseMove():longword;
+begin GetMouseMove:=GetMsg(WM_MOUSEMOVE) mod $100000000;end;
+function WaitMouseMove():longword;
+begin WaitMouseMove:=WaitMsg(WM_MOUSEMOVE) mod $100000000;end;
+function IsDropFile():boolean;
+begin IsDropFile:=IsMsg(WM_DROPFILES);end;
+function GetDropFile():string;
+begin getmem(_fn,_fnm);DragQueryFile(_ms.wParam,0,_fn,_fnm);GetDropFile:=_fn;end;
+function WaitDropFile():string;
+begin WaitMsg(WM_DROPFILES);WaitDropFile:=GetDropFile();end;
+function GetMouseAbsX():integer;var p:point;
+begin GetCursorPos(@p);GetMouseAbsX:=p.x;end;
+function GetMouseWinX():integer;
+begin GetMouseWinX:=GetMouseAbsX-GetWinPosX;end;
+function GetMousePosX():integer;
+begin GetMousePosX:=GetMouseWinX-GetBorderWidth;end;
+function GetMouseAbsY():integer;var p:point;
+begin GetCursorPos(@p);GetMouseAbsY:=p.y;end;
+function GetMouseWinY():integer;
+begin GetMouseWinY:=GetMouseAbsY-GetWinPosY;end;
+function GetMousePosY():integer;
+begin GetMousePosY:=GetMouseWinY-GetBorderHeight-GetBorderTitle;end;
+
+function LoadAudio(s:string):longword;
+begin
+_cid:=_cid+1;
+SendString('open "'+s+'" alias s'+i2s(_cid));
+LoadAudio:=_cid;
+end;
+procedure PlayAudio(id:longword;command:string);
+begin SendString('play s'+i2s(id)+command);end;
+procedure PlayAudio(id:longword);
+begin PlayAudio(id,'');end;
+procedure StopAudio(id:longword);
+begin SendString('stop s'+i2s(id));end;
+procedure PauseAudio(id:longword);
+begin SendString('pause s'+i2s(id));end;
+procedure ResumeAudio(id:longword);
+begin SendString('resume s'+i2s(id));end;
+procedure ReleaseAudio(id:longword);
+begin SendString('close s'+i2s(id));end;
+function GetAudioVol(id:longword):longword;
+begin GetAudioVol:=SendString('status s'+i2s(id)+' volume');end;
+procedure SetAudioVol(id:longword;v:longword);
+begin SendString('setaudio s'+i2s(id)+' volume to '+i2s(v));end;
+function GetAudioPos(id:longword):longword;
+begin GetAudioPos:=SendString('status s'+i2s(id)+' position');end;
+procedure SetAudioPos(id:longword;pos:longword);
+begin PlayAudio(id,' from '+i2s(pos)+' to '+i2s(GetAudioLen(id)));end;
+function GetAudioLen(id:longword):longword;
+begin GetAudioLen:=SendString('status s'+i2s(id)+' length');end;
+
+end.
