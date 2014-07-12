@@ -5,7 +5,6 @@ Tetris_Pascal
 
 Key Control:
 =============
-
 Left	move left
 Right	move right
 Up	transistion
@@ -29,7 +28,6 @@ ESC	Exit
 
 按键说明
 =============	
-
 左	左移一格
 右	右移一格
 上	逆时针旋转
