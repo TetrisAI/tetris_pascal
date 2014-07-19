@@ -1,4 +1,4 @@
-//Tetris_ax_C.cpp
+//Tetris_ax_C.c
 //Code by ax_pokl
 
 //内联函数
