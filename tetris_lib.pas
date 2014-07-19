@@ -127,6 +127,6 @@ end;
 
 exports AI;
 
-exports name;
+exports Name;
 
 end.
