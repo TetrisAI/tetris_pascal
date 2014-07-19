@@ -29,12 +29,13 @@ var
   bdcfull, bdcnull: longword;
 
 var
-  aihcur, aimid: longint;
+  aihcur, aies: array[1..depthm] of longint;
+  aimid: longint;
   aitw, aith: longint;
   aihon, aihol, aihod, aihoh: longint;
-  aiholln, ailln: longint;
+  aiholln, ailln: real;
   aill, aiho: array[0..maxwbd + 1] of shortint;
-  aies, aiel: longint;
+  aiel: longint;
   aitq, aitq1, aitq2, aitq3, aitq4, aitq5: longword;
 
   //消行
@@ -53,11 +54,7 @@ begin
       aij := aij + 1;
     end;
   //设置消行数
-  aies := aii - aij + 1;
-  if aies >= 3 then
-    aiel := -aies
-  else
-    aiel := aies;
+  aies[aidepth] := aii - aij + 1;
 end;
 
 //固定方块
@@ -101,7 +98,7 @@ end;
 function aieval2(aidepth: shortint): real;
 begin
   //设置当前块行数
-  aihcur := aik2next[aidepth].posy;
+  aihcur[aidepth] := aik2next[aidepth].posy;
   //初始化列变换
   aitw := 0;
   //厉遍高度
@@ -230,19 +227,26 @@ begin
         aitq5 := aitq5 shr 1;
       end;
     end;
-  if aiel = 1 then
-    aiel := 6;
-  if aiel = 2 then
-    aiel := -16;
+  aiel:=0;
   if ln34 then
-    ailln := aiel;
+  begin
+  ailln := ailln - 15;
+    if ailln < 0 then
+      ailln := 0;
+    if aies[aidepth] <= 2 then
+      aiel := aies[aidepth] * 60
+    else
+      aiel := 0;
+  end;
   //设置左中右平衡破缺参数
   aimid := -Abs(aik2next[aidepth].posx * 2 - wbd);
   //返回估值结果
-  aieval2 := aihcur * 200 / hbd - aies * 6 + aitw * 8 + aith * 8 +
-    aihon * 6 + aihol * 38 + ailln * 10 + aiholln * 4 + aihoh * 0.5 + aimid * 0.2;
-  //with aik2next[aidepth] do
-  //writeln(sit:5,posx:5,aihcur:5,aies:5,aitw:5,aith:5,aihon:5,aiholln:5,aihol:5,ailln:5,aimid:5,aihoh:5,aieval2:5);
+  aieval2 := +aitw * 8 + aith * 8 + aihon * 6 + aihol * 38 +
+    ailln * 10 + aiholln * 4 + aihoh * 0.5 + aimid * 0.2 + aiel;
+  for ail := 1 to aidepthc do
+    aieval2 := aieval2 + (aihcur[ail] * 190 / hbd - aies[ail] * 6) / aidepthc
+//  with aik2next[aidepth] do
+//  writeln(sit:5,posx:5,aihcur:5,aies:5,aitw:5,aith:5,aihon:5,aiholln:5,aihol:5,ailln:5,aimid:5,aihoh:5,aiel:5,aieval2:5);
 end;
 
 //超前引用
@@ -325,14 +329,11 @@ begin
       ainext2(aidepth);
       //获取估值结果
       airesr := aieval2(aidepth);
-      //如果结果大于最大结果
-      if airesr < airesm then
-        //如果当前深度小于深度
-        if aidepth < aidepthc then
-          //迭代深入
-          //        airesr:=airesr+aigo(aidepth+1);//无剪枝
-          airesr := Max(airesr, aigo(aidepth + 1));//剪枝
-          //如果结果仍旧大于最大结果
+      //如果当前深度小于深度
+      if aidepth < aidepthc then
+        //迭代深入
+        airesr := aigo(aidepth + 1);
+      //如果结果仍旧大于最大结果
       if airesr < airesm then
       begin
         //更新最大结果
