@@ -83,7 +83,7 @@ begin
   aiknext[depthm].posx := wbd div 2 + 1;
   aiknext[depthm].posy := hbd - 1;
   //添加方块到方块序列
-  lv := logn(base, Ln + base);
+  lv := logn(base, Abs(Ln) + base);
   //计算等级
   stept := Round(1000 / lv);
   //更新单步下落时间
@@ -185,7 +185,9 @@ begin
       playsound('erase');
     if Erase > 2 then
       playsound('erase2');
-  end;
+  end;                        {
+  if erase<=2 then erase:=-erase
+  else erase:=erase-1;         }
 end;
 
 procedure High();
@@ -229,8 +231,6 @@ end;
 procedure stick(knd, sit, posx, posy: shortint);
   //判断是否能塞入（移动或旋转）
 begin
-  if sit = 5 then
-    sit := 1;
   stickb := true;
   for si := -2 to 1 do
     for sj := -2 to 1 do
@@ -267,7 +267,14 @@ procedure up();
   //旋转一下
 begin
   with aiknext[1] do
-    stick(knd, sit + 1, posx, posy);
+    stick(knd, sit mod 4 + 1, posx, posy);
+end;
+
+procedure up2();
+  //旋转一下
+begin
+  with aiknext[1] do
+    stick(knd, (sit + 2) mod 4 + 1, posx, posy);
 end;
 
 procedure down2();
@@ -384,7 +391,7 @@ begin
   drawt('Score ' + r2s(aln), 2, ck[sum mod 7 + 1]);
   drawt('Level ' + r2s(lv), 3, ck[Trunc(lv) mod 7 + 1]);
   drawt('APS ' + r2s(aps), 4, ck[Trunc(aps * 10) mod 7 + 1]);
-  drawt('Line ' + i2s(Ln), 5, ck[Ln mod 7 + 1]);
+  drawt('Line ' + i2s(Abs(Ln)), 5, ck[Abs(Ln) mod 7 + 1]);
   drawt('Depth ' + i2s(aidepthc), 6, ck[aidepthc]);
   if pause then
     drawt('Paused', 7, ck[5])
@@ -479,14 +486,14 @@ begin
       //draw
     end;
     //aion
+    nextmsg();
+    checkmusic();
     if dead then
     begin
       playsound('lost');
       drawt('Press "R"', 7, ck[5]);
       waitkey();
     end;
-    checkmusic();
-    nextmsg();
     if iskey() then
     //判断是否按键
     begin
@@ -515,6 +522,8 @@ begin
           Right();
         k_up:
           up();
+        96:
+          up2();
         k_space:
           space();
         k_return:
