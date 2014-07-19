@@ -582,8 +582,8 @@ end;
 
 function NewThread(th:pointer):longword;
 begin _tid:=_tid+1;NewThread:=CreateThread(nil,0,th,nil,0,_tid);end;
-procedure Delay(t:longword);var TimeOld:longword;
-begin TimeOld:=GetTime();repeat NextMsg();until GetTime()>TimeOld+t;end;
+procedure Delay(t:longword);
+begin Sleep(t);end;
 procedure Delay(t:real);
 begin Delay(longword(round(t*1000)));end;
 procedure Delay();
