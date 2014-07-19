@@ -1,4 +1,4 @@
-//AI.CPP
+//Tetris_ax_C.cpp
 //Code by ax_pokl
 
 //内联函数
@@ -66,9 +66,9 @@ int LineFull = 0;
 int LineNull = 0;
 
 //当前块行数
-int LandHeight = 0;
+int LandHeight[DepthMax + 1];
 //消行数
-int EraseCount = 0;
+int EraseCount[DepthMax + 1];
 //列变换
 int ColTrans = 0;
 //行变换
@@ -103,6 +103,8 @@ int WellNum[HeightMax];
 int WellDepth = 0;
 //左中右平衡破缺
 int Middle = 0;
+//估值结果
+double result = 0;
 
 //最优旋转
 int BestRot = 0;
@@ -129,7 +131,7 @@ void Erase(int DepthCur)
     }
   }
   //设置消行数
-  EraseCount = i - j;
+  EraseCount[DepthCur] = i - j;
 }
 
 //固定方块
@@ -182,7 +184,7 @@ bool Overlap(int DepthCur)
 double Evaluate(int DepthCur)
 {
   //设置当前块行数
-  LandHeight = PieceTry[DepthCur].PosY;
+  LandHeight[DepthCur] = PieceTry[DepthCur].PosY;
   //初始化列变换
   ColTrans = 0;
   //厉遍高度
@@ -318,17 +320,22 @@ double Evaluate(int DepthCur)
   //设置左中右平衡破缺参数
   Middle = Abs(PieceTry[DepthCur].PosX *2-BoardWidth);
   //返回估值结果
-	return 
-		-LandHeight*190/BoardHeight
-		+EraseCount*6
-		-ColTrans*10
-		-RowTrans*10
-		-HoleCount*6
-		-HoleLine*38
-		-WellDepth*10
-		-HoleDepth*4
-		-HolePiece*10/BoardHeight
-		+Middle*0.2;
+  result = 
+	  -ColTrans*8
+	  -RowTrans*8
+	  -HoleCount*6
+	  -HoleLine*38
+	  -WellDepth*10
+	  -HoleDepth*4
+	  -HolePiece*0.5//10/BoardHeight
+	  +Middle*0.2;
+  for (i = 1; i <= DepthCur; i++)
+  {
+	  result +=
+		  -LandHeight[i]*190/BoardHeight/DepthCur
+		  +EraseCount[i]*6/DepthCur;
+  }
+  return result;
 }
 
 //超前引用
@@ -417,16 +424,11 @@ double Calculate(int DepthCur)
       Erase(DepthCur);
       //获取估值结果
       Result = Evaluate(DepthCur);
-      //如果结果大于最大结果
-      if (Result > ResultMax)
+      //如果当前深度小于深度
+      if (DepthCur < Depth)
       {
-        //如果当前深度小于深度
-        if (DepthCur < Depth)
-        {
-          //迭代深入
-          //Result+=AiGo(DepthCur+1);//无剪枝
-          Result = Max(Result, AIGo(DepthCur + 1)); //剪枝
-        }
+        //迭代深入
+        Result = AIGo(DepthCur + 1);
       }
       //如果结果仍旧大于最大结果
       if (Result > ResultMax)
