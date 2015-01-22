@@ -33,7 +33,7 @@ var
   aimid: longint;
   aitw, aith: longint;
   aihon, aihol, aihod, aihoh: longint;
-  aiholln, ailln: real;
+  aiholln, ailln: longint;
   aill, aiho: array[0..maxwbd + 1] of shortint;
   aiel: longint;
   aitq, aitq1, aitq2, aitq3, aitq4, aitq5: longword;
@@ -93,9 +93,29 @@ begin
         //返回假
         aistick2 := false;
 end;
-//估值函数
 
-function aieval2(aidepth: shortint): real;
+//计算可能重叠块块数
+function aistick2k(aidepth: shortint): shortint;
+begin
+  aistick2k := 0;
+  //厉遍七中方块
+  for aim := 1 to 7 do
+  begin
+    //厉遍方块常量行高度
+    for aisj := -2 to 1 do
+      //如果行数没有到底线
+      if (hbd - 1 + aisj) >= 0 then
+        //如果当前行和方块常量行进行与运算为不零
+        if (aibd2[hbd - 1 + aisj, aidepth] and
+          (pce2[aim, 1,
+          aisj] shl (wbd - wbd div 2))) <> 0 then
+          //返回假
+          aistick2k := aistick2k + 1;
+  end;
+end;
+
+//估值函数
+function aieval2(aidepth: shortint): longint;
 begin
   //设置当前块行数
   aihcur[aidepth] := aik2next[aidepth].posy;
@@ -227,39 +247,41 @@ begin
         aitq5 := aitq5 shr 1;
       end;
     end;
-  aiel:=0;
+  aiel := 0;
   if ln34 then
   begin
-  ailln := ailln - 15;
+    ailln := ailln - 15;
     if ailln < 0 then
       ailln := 0;
     if aies[aidepth] <= 2 then
-      aiel := aies[aidepth] * 60
+      aiel := aies[aidepth] * 600
     else
       aiel := 0;
   end;
   //设置左中右平衡破缺参数
   aimid := -Abs(aik2next[aidepth].posx * 2 - wbd);
   //返回估值结果
-  aieval2 := +aitw * 8 + aith * 8 + aihon * 6 + aihol * 38 +
-    ailln * 10 + aiholln * 4 + aihoh * 0.5 + aimid * 0.2 + aiel;
+  aieval2 := +aitw * 80 + aith * 80 + aihon * 60 + aihol * 380 +
+    ailln * 100 + aiholln * 40 + aihoh * 5 + aimid * 2 + aiel * 10;
   for ail := 1 to aidepthc do
-    aieval2 := aieval2 + (aihcur[ail] * 190 / hbd - aies[ail] * 6) / aidepthc
-//  with aik2next[aidepth] do
-//  writeln(sit:5,posx:5,aihcur:5,aies:5,aitw:5,aith:5,aihon:5,aiholln:5,aihol:5,ailln:5,aimid:5,aihoh:5,aiel:5,aieval2:5);
+    aieval2 := aieval2 + (aihcur[ail] * 1750 div (hbd * aidepthc) -
+      aies[ail] * 60 div aidepthc);
+  aieval2 := aieval2 + aistick2k(aidepth) * 50000;
+  //  with aik2next[aidepth] do
+  //  writeln(sit:5,posx:5,aihcur:5,aies:5,aitw:5,aith:5,aihon:5,aiholln:5,aihol:5,ailln:5,aimid:5,aihoh:5,aiel:5,aieval2:5);
 end;
 
 //超前引用
-function aigo(aidepth: shortint): real; forward;
+function aigo(aidepth: shortint): longint; forward;
 
   //AI厉遍函数
-function aicalc(aidepth: shortint): real;
+function aicalc(aidepth: shortint): longint;
   //初始化结果
 var
-  airesm: real = $7FFFFFFF;
+  airesm: longint = $7FFFFFFF;
   //初始化临时结果
 var
-  airesc, airese, airesr: real;
+  airesc, airese, airesr: longint;
   //初始化方块最大移动
 var
   aimsit, aimposl, aimposr: shortint;
@@ -324,29 +346,33 @@ begin
       until not (aistick2(aidepth));
       //尝试方块纵坐标加一
       aik2next[aidepth].posy := aik2next[aidepth].posy + 1;
-      //固定方块
-      //消行
-      ainext2(aidepth);
-      //获取估值结果
-      airesr := aieval2(aidepth);
-      //如果当前深度小于深度
-      if aidepth < aidepthc then
-        //迭代深入
-        airesr := aigo(aidepth + 1);
-      //如果结果仍旧大于最大结果
-      if airesr < airesm then
+      //如果仍旧没有重叠（没死）
+      if (aistick2(aidepth)) then
       begin
-        //更新最大结果
-        airesm := airesr;
-        //如果当前深度是1
-        if aidepth = 1 then
+        //固定方块
+        //消行
+        ainext2(aidepth);
+        //获取估值结果
+        airesr := aieval2(aidepth);
+        //如果当前深度小于深度
+        if aidepth < aidepthc then
+          //迭代深入
+          airesr := aigo(aidepth + 1);
+        //如果结果仍旧大于最大结果
+        if airesr < airesm then
         begin
-          //更新最优旋转
-          airsit := aik2next[aidepth].sit - aiknext[aidepth].sit;
-          //更新最优移动
-          airpos := aik2next[aidepth].posx - aiknext[aidepth].posx;
-          //更新最优横坐标
-          airposb := aik2next[aidepth].posx;
+          //更新最大结果
+          airesm := airesr;
+          //如果当前深度是1
+          if aidepth = 1 then
+          begin
+            //更新最优旋转
+            airsit := aik2next[aidepth].sit - aiknext[aidepth].sit;
+            //更新最优移动
+            airpos := aik2next[aidepth].posx - aiknext[aidepth].posx;
+            //更新最优横坐标
+            airposb := aik2next[aidepth].posx;
+          end;
         end;
       end;
       //重置尝试方块纵坐标
@@ -358,7 +384,7 @@ begin
 end;
 
 //AI主函数
-function aigo(aidepth: shortint): real;
+function aigo(aidepth: shortint): longint;
 var
   aigoi: longint;
 begin
@@ -383,7 +409,7 @@ begin
       aigo := aigo + aicalc(aidepth);
     end;
     //取结果为叠加结果平均值
-    aigo := aigo / 7;
+    aigo := aigo div 7;
   end
   //如果方块种类不为零
   else
