@@ -1,30 +1,30 @@
-//æ–¹å—ç±»å‹ç»“æ„
+//·½¿éÀàĞÍ½á¹¹
 type
   aisq = record
     knd, sit, posx, posy: shortint;
   end;
 
-  //æ–¹å—æœ€å¤§æ—‹è½¬
+  //·½¿é×î´óĞı×ª
 const
   aiaksit: array[1..7] of shortint = (0, 1, 1, 1, 3, 3, 3);
 
-  //å…¨å±€è®¡æ•°å˜é‡
+  //È«¾Ö¼ÆÊı±äÁ¿
 var
   aii, aij, aik, ail, aim, ain: longint;
   aisi, aisj, aisk: longint;
 
-  //æ·±åº¦
+  //Éî¶È
 var
   aidepthc: shortint = 1;
-  //ç›˜é¢æ•°ç»„
+  //ÅÌÃæÊı×é
 var
   aibd2: array[0..maxhbd + 1, 0..depthm] of longword;
-  //æ–¹å—
+  //·½¿é
   aiknext, aik2next: array[1..depthm] of aisq;
 
 var
   airsit, airpos, airposb: shortint;
-  //æ»¡è¡Œç©ºè¡Œ
+  //ÂúĞĞ¿ÕĞĞ
 var
   bdcfull, bdcnull: longword;
 
@@ -38,38 +38,38 @@ var
   aiel: longint;
   aitq, aitq1, aitq2, aitq3, aitq4, aitq5: longword;
 
-  //æ¶ˆè¡Œ
+  //ÏûĞĞ
 procedure aierase2(aidepth: shortint);
 begin
-  //åˆå§‹åŒ–å†™å…¥è¡Œè¡Œæ•°
+  //³õÊ¼»¯Ğ´ÈëĞĞĞĞÊı
   aij := 1;
-  //å‰éè¯»å–è¡Œè¡Œæ•°é«˜åº¦
+  //À÷±é¶ÁÈ¡ĞĞĞĞÊı¸ß¶È
   for aii := 1 to hbd do
-    //å¦‚æœè¯»å–è¡Œä¸ä¸ºæ»¡è¡Œ
+    //Èç¹û¶ÁÈ¡ĞĞ²»ÎªÂúĞĞ
     if not (aibd2[aii, aidepth] = bdcfull) then
     begin
-      //å†™å…¥è¯¥è¡Œ
+      //Ğ´Èë¸ÃĞĞ
       aibd2[aij, aidepth] := aibd2[aii, aidepth];
-      //å†™å…¥è¡Œè¡Œæ•°åŠ ä¸€
+      //Ğ´ÈëĞĞĞĞÊı¼ÓÒ»
       aij := aij + 1;
     end;
-  //è®¾ç½®æ¶ˆè¡Œæ•°
+  //ÉèÖÃÏûĞĞÊı
   aies[aidepth] := aii - aij + 1;
 end;
 
-//å›ºå®šæ–¹å—
+//¹Ì¶¨·½¿é
 procedure ainext2(aidepth: shortint);
 begin
-  //å‰éé«˜åº¦
+  //À÷±é¸ß¶È
   for aisj := 1 to hbd do
-    //é‡ç½®å½“å‰æ·±åº¦ç›˜é¢ä¸ºå‰ä¸€æ·±åº¦ç›˜é¢
+    //ÖØÖÃµ±Ç°Éî¶ÈÅÌÃæÎªÇ°Ò»Éî¶ÈÅÌÃæ
     aibd2[aisj, aidepth] := aibd2[aisj, aidepth - 1];
-  //å‰éæ–¹å—å¸¸é‡è¡Œé«˜åº¦
+  //À÷±é·½¿é³£Á¿ĞĞ¸ß¶È
   for aisj := -2 to 1 do
   begin
-    //å¦‚æœè¡Œæ•°æ²¡æœ‰åˆ°åº•çº¿
+    //Èç¹ûĞĞÊıÃ»ÓĞµ½µ×Ïß
     if (aik2next[aidepth].posy + aisj) >= 0 then
-      //å½“å‰è¡Œå’Œæ–¹å—å¸¸é‡è¡Œè¿›è¡Œæˆ–è¿ç®—
+      //µ±Ç°ĞĞºÍ·½¿é³£Á¿ĞĞ½øĞĞ»òÔËËã
       aibd2[aik2next[aidepth].posy + aisj, aidepth] :=
         aibd2[aik2next[aidepth].posy + aisj, aidepth] or
         (pce2[aik2next[aidepth].knd, aik2next[aidepth].sit,
@@ -78,172 +78,172 @@ begin
   aierase2(aidepth);
 end;
 
-//åˆ¤æ–­é‡å 
+//ÅĞ¶ÏÖØµş
 function aistick2(aidepth: shortint): boolean;
 begin
   aistick2 := true;
-  //å‰éæ–¹å—å¸¸é‡è¡Œé«˜åº¦
+  //À÷±é·½¿é³£Á¿ĞĞ¸ß¶È
   for aisj := -2 to 1 do
-    //å¦‚æœè¡Œæ•°æ²¡æœ‰åˆ°åº•çº¿
+    //Èç¹ûĞĞÊıÃ»ÓĞµ½µ×Ïß
     if (aik2next[aidepth].posy + aisj) >= 0 then
-      //å¦‚æœå½“å‰è¡Œå’Œæ–¹å—å¸¸é‡è¡Œè¿›è¡Œä¸è¿ç®—ä¸ºä¸é›¶
+      //Èç¹ûµ±Ç°ĞĞºÍ·½¿é³£Á¿ĞĞ½øĞĞÓëÔËËãÎª²»Áã
       if (aibd2[aik2next[aidepth].posy + aisj, aidepth - 1] and
         (pce2[aik2next[aidepth].knd, aik2next[aidepth].sit,
         aisj] shl (wbd - aik2next[aidepth].posx + 1))) <> 0 then
-        //è¿”å›å‡
+        //·µ»Ø¼Ù
         aistick2 := false;
 end;
 
-//è®¡ç®—å¯èƒ½é‡å å—å—æ•°
+//¼ÆËã¿ÉÄÜÖØµş¿é¿éÊı
 function aistick2k(aidepth: shortint): shortint;
 begin
   aistick2k := 0;
-  //å‰éä¸ƒä¸­æ–¹å—
+  //À÷±éÆßÖĞ·½¿é
   for aim := 1 to 7 do
   begin
-    //å‰éæ–¹å—å¸¸é‡è¡Œé«˜åº¦
+    //À÷±é·½¿é³£Á¿ĞĞ¸ß¶È
     for aisj := -2 to 1 do
-      //å¦‚æœè¡Œæ•°æ²¡æœ‰åˆ°åº•çº¿
+      //Èç¹ûĞĞÊıÃ»ÓĞµ½µ×Ïß
       if (hbd - 1 + aisj) >= 0 then
-        //å¦‚æœå½“å‰è¡Œå’Œæ–¹å—å¸¸é‡è¡Œè¿›è¡Œä¸è¿ç®—ä¸ºä¸é›¶
+        //Èç¹ûµ±Ç°ĞĞºÍ·½¿é³£Á¿ĞĞ½øĞĞÓëÔËËãÎª²»Áã
         if (aibd2[hbd - 1 + aisj, aidepth] and
           (pce2[aim, 1,
           aisj] shl (wbd - wbd div 2))) <> 0 then
-          //è¿”å›å‡
+          //·µ»Ø¼Ù
           aistick2k := aistick2k + 1;
   end;
 end;
 
-//ä¼°å€¼å‡½æ•°
+//¹ÀÖµº¯Êı
 function aieval2(aidepth: shortint): longint;
 begin
-  //è®¾ç½®å½“å‰å—è¡Œæ•°
+  //ÉèÖÃµ±Ç°¿éĞĞÊı
   aihcur[aidepth] := aik2next[aidepth].posy;
-  //åˆå§‹åŒ–åˆ—å˜æ¢
+  //³õÊ¼»¯ÁĞ±ä»»
   aitw := 0;
-  //å‰éé«˜åº¦
+  //À÷±é¸ß¶È
   for aij := 1 to hbd do
   begin
-    //å¯¹è¯¥è¡Œå’Œè¯¥è¡Œå³ç§»ä¸€æ ¼è¿›è¡Œå¼‚æˆ–è¿ç®—
+    //¶Ô¸ÃĞĞºÍ¸ÃĞĞÓÒÒÆÒ»¸ñ½øĞĞÒì»òÔËËã
     aitq := (aibd2[aij, aidepth] xor (aibd2[aij, aidepth] shr 1)) shr 1;
-    //å‰éå®½åº¦
+    //À÷±é¿í¶È
     for aii := 0 to wbd do
     begin
-      //å¦‚æœæœ€å³ä¸ºçœŸï¼ˆå·¦å³æ–¹å—ä¸åŒï¼‰åˆ™åˆ—å˜æ¢åŠ ä¸€
+      //Èç¹û×îÓÒÎªÕæ£¨×óÓÒ·½¿é²»Í¬£©ÔòÁĞ±ä»»¼ÓÒ»
       aitw := aitw + (aitq and 1);
-      //å˜æ¢è¡Œå³ç§»
+      //±ä»»ĞĞÓÒÒÆ
       aitq := aitq shr 1;
     end;
   end;
-  //åˆå§‹åŒ–è¡Œå˜æ¢
+  //³õÊ¼»¯ĞĞ±ä»»
   aith := 0;
   for aij := 0 to hbd - 1 do
   begin
-    //å¯¹è¯¥è¡Œå’Œä¸Šä¸€è¡Œè¿›è¡Œå¼‚æˆ–è¿ç®—
+    //¶Ô¸ÃĞĞºÍÉÏÒ»ĞĞ½øĞĞÒì»òÔËËã
     aitq := (aibd2[aij, aidepth] xor aibd2[aij + 1, aidepth]) shr 2;
-    //å‰éå®½åº¦
+    //À÷±é¿í¶È
     for aii := 1 to wbd do
     begin
-      //å¦‚æœæœ€å³ä¸ºçœŸï¼ˆä¸Šä¸‹æ–¹å—ä¸åŒï¼‰åˆ™è¡Œå˜æ¢åŠ ä¸€
+      //Èç¹û×îÓÒÎªÕæ£¨ÉÏÏÂ·½¿é²»Í¬£©ÔòĞĞ±ä»»¼ÓÒ»
       aith := aith + (aitq and 1);
-      //å˜æ¢è¡Œå³ç§»
+      //±ä»»ĞĞÓÒÒÆ
       aitq := aitq shr 1;
     end;
   end;
-  //åˆå§‹åŒ–æ´æ•°
+  //³õÊ¼»¯¶´Êı
   aihon := 0;
-  //åˆå§‹åŒ–æ´è¡Œæ•°
+  //³õÊ¼»¯¶´ĞĞÊı
   aihol := 0;
-  //åˆå§‹åŒ–æœ€é«˜æ´è¡Œæ•°
+  //³õÊ¼»¯×î¸ß¶´ĞĞÊı
   aihod := 0;
-  //åˆå§‹åŒ–æœ€é«˜æ´ä¸Šæ–¹å—æ•°
+  //³õÊ¼»¯×î¸ß¶´ÉÏ·½¿éÊı
   aihoh := 0;
-  //åˆå§‹åŒ–æ´æ·±
+  //³õÊ¼»¯¶´Éî
   aiholln := 0;
-  //åˆå§‹åŒ–äº•æ·±
+  //³õÊ¼»¯¾®Éî
   ailln := 0;
-  //å‰éå®½åº¦
+  //À÷±é¿í¶È
   for aii := wbd downto 1 do
   begin
-    //åˆå§‹åŒ–æ´åˆ—
+    //³õÊ¼»¯¶´ÁĞ
     aiho[aii] := 0;
-    //åˆå§‹åŒ–äº•åˆ—
+    //³õÊ¼»¯¾®ÁĞ
     aill[aii] := 0;
   end;
-  //åˆå§‹åŒ–æ— æ´è¡Œ
+  //³õÊ¼»¯ÎŞ¶´ĞĞ
   aitq2 := bdcnull;
-  //åå‘å‰éé«˜åº¦
+  //·´ÏòÀ÷±é¸ß¶È
   for aij := hbd downto 1 do
   begin
-    //å¯¹å…ˆå‰æ— æ´è¡Œå’Œå½“å‰è¡Œè¿›è¡Œæˆ–è¿ç®—
+    //¶ÔÏÈÇ°ÎŞ¶´ĞĞºÍµ±Ç°ĞĞ½øĞĞ»òÔËËã
     aitq2 := aitq2 or aibd2[aij, aidepth];
-    //å¯¹å½“å‰æ— æ´è¡Œå’Œå½“å‰è¡Œè¿›è¡Œå¼‚æˆ–è¿ç®—ï¼ˆç»“æœä¸ºæ´è¡Œï¼‰
+    //¶Ôµ±Ç°ÎŞ¶´ĞĞºÍµ±Ç°ĞĞ½øĞĞÒì»òÔËËã£¨½á¹ûÎª¶´ĞĞ£©
     aitq1 := (aitq2 xor aibd2[aij, aidepth]) shr 2;
-    //å½“å‰è¡Œæœ‰æ´
+    //µ±Ç°ĞĞÓĞ¶´
     if not (aitq1 = 0) then
     begin
-      //æ´è¡Œæ•°åŠ ä¸€
+      //¶´ĞĞÊı¼ÓÒ»
       aihol := aihol + 1;
-      //å¦‚æœå…ˆå‰å°šæœªæœ‰æ´è¡Œ
+      //Èç¹ûÏÈÇ°ÉĞÎ´ÓĞ¶´ĞĞ
       if (aihod = 0) then
       begin
-        //è®¾ç½®æœ€é«˜æœ‰æ´è¡Œè¡Œæ•°
+        //ÉèÖÃ×î¸ßÓĞ¶´ĞĞĞĞÊı
         aihod := aij;
-        //ä¿å­˜æœ€é«˜æœ‰æ´è¡Œæ´çŠ¶æ€
+        //±£´æ×î¸ßÓĞ¶´ĞĞ¶´×´Ì¬
         aitq4 := aitq1;
       end
     end;
-    //åˆå§‹åŒ–äº•è¡Œå³ç§»
+    //³õÊ¼»¯¾®ĞĞÓÒÒÆ
     aitq3 := aitq2 shr 1;
-    //åå‘å‰éå®½åº¦
+    //·´ÏòÀ÷±é¿í¶È
     for aii := wbd downto 1 do
     begin
-      //å¦‚æœæ´è¡Œæœ€å³ä¸ºæ´
+      //Èç¹û¶´ĞĞ×îÓÒÎª¶´
       if aitq1 and 1 = 1 then
       begin
-        //æ´æ•°åŠ ä¸€
+        //¶´Êı¼ÓÒ»
         aihon := aihon + 1;
-        //æ´åˆ—åŠ ä¸€
+        //¶´ÁĞ¼ÓÒ»
         aiho[aii] := aiho[aii] + 1;
       end
-      //å¦‚æœæ´è¡Œæœ€å³éæ´
+      //Èç¹û¶´ĞĞ×îÓÒ·Ç¶´
       else
       begin
-        //æ´åˆ—æ¸…é›¶
+        //¶´ÁĞÇåÁã
         aiho[aii] := 0;
       end;
-      //è®¾ç½®æ´æ·±åŠ æ´åˆ—
+      //ÉèÖÃ¶´Éî¼Ó¶´ÁĞ
       aiholln := aiholln + aiho[aii];
-      //æ´è¡Œå³ç§»
+      //¶´ĞĞÓÒÒÆ
       aitq1 := aitq1 shr 1;
-      //å¦‚æœäº•è¡Œæœ€å³ä¸ºäº•
+      //Èç¹û¾®ĞĞ×îÓÒÎª¾®
       if ((aitq3 xor 5) and 7) = 0 then
       begin
-        //äº•åˆ—åŠ ä¸€
+        //¾®ÁĞ¼ÓÒ»
         aill[aii] := aill[aii] + 1;
-        //è®¾ç½®äº•æ·±åŠ äº•åˆ—
+        //ÉèÖÃ¾®Éî¼Ó¾®ÁĞ
         ailln := ailln + aill[aii];
       end;
-      //äº•è¡Œå³ç§»
+      //¾®ĞĞÓÒÒÆ
       aitq3 := aitq3 shr 1;
     end;
   end;
-  //å¦‚æœæœ€é«˜æœ‰æ´è¡Œè¡Œæ•°ä¸ä¸ºé›¶
+  //Èç¹û×î¸ßÓĞ¶´ĞĞĞĞÊı²»ÎªÁã
   if not (aihod = 0) then
-    //ä»æœ€é«˜æœ‰æ´è¡Œä¸Šä¸€è¡Œå¼€å§‹å¾€ä¸Šå‰é
+    //´Ó×î¸ßÓĞ¶´ĞĞÉÏÒ»ĞĞ¿ªÊ¼ÍùÉÏÀ÷±é
     for aij := aihod + 1 to hbd do
     begin
-      //è®¾ä¸´æ—¶è¡Œä¸ºæœ€é«˜æœ‰æ´è¡Œå’Œå½“å‰è¡Œçš„å¼‚æˆ–å˜æ¢ï¼ˆæŠŠæœ‰æ´åˆ—çš„æ–¹å—å¼‚æˆ–å‡ºæ¥ï¼‰
+      //ÉèÁÙÊ±ĞĞÎª×î¸ßÓĞ¶´ĞĞºÍµ±Ç°ĞĞµÄÒì»ò±ä»»£¨°ÑÓĞ¶´ÁĞµÄ·½¿éÒì»ò³öÀ´£©
       aitq5 := aitq4 and (aibd2[aij, aidepth] shr 2);
-      //å¦‚æœæœ‰æ´åˆ—å…¨éƒ¨æ²¡æœ‰æ–¹å—åˆ™è·³å‡ºå¾ªç¯
+      //Èç¹ûÓĞ¶´ÁĞÈ«²¿Ã»ÓĞ·½¿éÔòÌø³öÑ­»·
       if aitq5 = 0 then
         Break;
-      //å‰éå®½åº¦
+      //À÷±é¿í¶È
       for aii := 1 to wbd do
       begin
-        //å¦‚æœæœ€å³ä¸ºæ–¹å—åˆ™æœ€é«˜æœ‰æ´è¡Œä¸Šæ–¹å—æ•°å¢åŠ è¯¥è¡Œè¡Œæ•°
+        //Èç¹û×îÓÒÎª·½¿éÔò×î¸ßÓĞ¶´ĞĞÉÏ·½¿éÊıÔö¼Ó¸ÃĞĞĞĞÊı
         aihoh := aihoh + (aitq5 and 1) * aij;
-        //ä¸´æ—¶è¡Œå³ç§»
+        //ÁÙÊ±ĞĞÓÒÒÆ
         aitq5 := aitq5 shr 1;
       end;
     end;
@@ -258,9 +258,9 @@ begin
     else
       aiel := 0;
   end;
-  //è®¾ç½®å·¦ä¸­å³å¹³è¡¡ç ´ç¼ºå‚æ•°
+  //ÉèÖÃ×óÖĞÓÒÆ½ºâÆÆÈ±²ÎÊı
   aimid := -Abs(aik2next[aidepth].posx * 2 - wbd);
-  //è¿”å›ä¼°å€¼ç»“æœ
+  //·µ»Ø¹ÀÖµ½á¹û
   aieval2 := +aitw * 80 + aith * 80 + aihon * 60 + aihol * 380 +
     ailln * 100 + aiholln * 40 + aihoh * 5 + aimid * 2 + aiel * 10;
   for ail := 1 to aidepthc do
@@ -271,18 +271,18 @@ begin
   //  writeln(sit:5,posx:5,aihcur:5,aies:5,aitw:5,aith:5,aihon:5,aiholln:5,aihol:5,ailln:5,aimid:5,aihoh:5,aiel:5,aieval2:5);
 end;
 
-//è¶…å‰å¼•ç”¨
+//³¬Ç°ÒıÓÃ
 function aigo(aidepth: shortint): longint; forward;
 
-  //AIå‰éå‡½æ•°
+  //AIÀ÷±éº¯Êı
 function aicalc(aidepth: shortint): longint;
-  //åˆå§‹åŒ–ç»“æœ
+  //³õÊ¼»¯½á¹û
 var
   airesm: longint = $7FFFFFFF;
-  //åˆå§‹åŒ–ä¸´æ—¶ç»“æœ
+  //³õÊ¼»¯ÁÙÊ±½á¹û
 var
   airesc, airese, airesr: longint;
-  //åˆå§‹åŒ–æ–¹å—æœ€å¤§ç§»åŠ¨
+  //³õÊ¼»¯·½¿é×î´óÒÆ¶¯
 var
   aimsit, aimposl, aimposr: shortint;
 var
@@ -290,148 +290,148 @@ var
 begin
   //writeln();
   aimsit := 0;;
-  //å½“æ–¹å—æœ€å¤§æ—‹è½¬å°äºæ–¹å—æœ€å¤§æ—‹è½¬å¸¸é‡æ—¶åš
+  //µ±·½¿é×î´óĞı×ªĞ¡ÓÚ·½¿é×î´óĞı×ª³£Á¿Ê±×ö
   while aimsit < aiaksit[aik2next[aidepth].knd] do
   begin
-    //å¢åŠ å°è¯•æ–¹å—æ—‹è½¬
+    //Ôö¼Ó³¢ÊÔ·½¿éĞı×ª
     aik2next[aidepth].sit := aik2next[aidepth].sit + 1;
-    //å¦‚æœé‡å åˆ™è·³å‡ºå¾ªç¯
+    //Èç¹ûÖØµşÔòÌø³öÑ­»·
     if not (aistick2(aidepth)) then
       Break
-      //å¦åˆ™å¢åŠ æ–¹å—æœ€å¤§æ—‹è½¬
+      //·ñÔòÔö¼Ó·½¿é×î´óĞı×ª
     else
       aimsit := aimsit + 1;
   end;
   for aictsit := aiknext[aidepth].sit to aiknext[aidepth].sit + aimsit do
   begin
-    //é‡ç½®å°è¯•æ–¹å—æ—‹è½¬
+    //ÖØÖÃ³¢ÊÔ·½¿éĞı×ª
     aik2next[aidepth].sit := aictsit;
-    //é‡ç½®å°è¯•æ–¹å—æ¨ªåæ ‡
+    //ÖØÖÃ³¢ÊÔ·½¿éºá×ø±ê
     aik2next[aidepth].posx := aiknext[aidepth].posx;
-    //è®¾æ–¹å—æœ€å¤§å·¦ç§»ä¸º0
+    //Éè·½¿é×î´ó×óÒÆÎª0
     aimposl := 0;
-    //åš
+    //×ö
     repeat
-      //æ–¹å—æœ€å¤§å·¦ç§»å‡ä¸€
+      //·½¿é×î´ó×óÒÆ¼õÒ»
       aimposl := aimposl - 1;
-      //å°è¯•æ–¹å—æ¨ªåæ ‡å‡ä¸€
+      //³¢ÊÔ·½¿éºá×ø±ê¼õÒ»
       aik2next[aidepth].posx := aik2next[aidepth].posx - 1;
-      //ç›´åˆ°é‡å 
+      //Ö±µ½ÖØµş
     until not (aistick2(aidepth));
     aimposl := aimposl + 1;
-    //é‡ç½®å°è¯•æ–¹å—æ¨ªåæ ‡
+    //ÖØÖÃ³¢ÊÔ·½¿éºá×ø±ê
     aik2next[aidepth].posx := aiknext[aidepth].posx;
-    //è®¾æ–¹å—æœ€å¤§å³ç§»ä¸º0
+    //Éè·½¿é×î´óÓÒÒÆÎª0
     aimposr := 0;
-    //åš
+    //×ö
     repeat
-      //æ–¹å—æœ€å¤§å³ç§»åŠ ä¸€
+      //·½¿é×î´óÓÒÒÆ¼ÓÒ»
       aimposr := aimposr + 1;
-      //å°è¯•æ–¹å—æ¨ªåæ ‡åŠ ä¸€
+      //³¢ÊÔ·½¿éºá×ø±ê¼ÓÒ»
       aik2next[aidepth].posx := aik2next[aidepth].posx + 1;
-      //ç›´åˆ°é‡å 
+      //Ö±µ½ÖØµş
     until not (aistick2(aidepth));
     aimposr := aimposr - 1;
-    //ä»æœ€å·¦åˆ°æœ€å³å‰éåæ ‡
+    //´Ó×î×óµ½×îÓÒÀ÷±é×ø±ê
     for aictposx := aiknext[aidepth].posx + aimposl to aiknext[aidepth].posx +
       aimposr do
     begin
-      //é‡ç½®å°è¯•æ–¹å—æ¨ªåæ ‡ä¸ºå‰éåæ ‡
+      //ÖØÖÃ³¢ÊÔ·½¿éºá×ø±êÎªÀ÷±é×ø±ê
       aik2next[aidepth].posx := aictposx;
-      //åš
+      //×ö
       repeat
-        //å°è¯•æ–¹å—çºµåæ ‡å‡ä¸€
+        //³¢ÊÔ·½¿é×İ×ø±ê¼õÒ»
         aik2next[aidepth].posy := aik2next[aidepth].posy - 1;
-        //ç›´åˆ°é‡å 
+        //Ö±µ½ÖØµş
       until not (aistick2(aidepth));
-      //å°è¯•æ–¹å—çºµåæ ‡åŠ ä¸€
+      //³¢ÊÔ·½¿é×İ×ø±ê¼ÓÒ»
       aik2next[aidepth].posy := aik2next[aidepth].posy + 1;
-      //å¦‚æœä»æ—§æ²¡æœ‰é‡å ï¼ˆæ²¡æ­»ï¼‰
+      //Èç¹ûÈÔ¾ÉÃ»ÓĞÖØµş£¨Ã»ËÀ£©
       if (aistick2(aidepth)) then
       begin
-        //å›ºå®šæ–¹å—
-        //æ¶ˆè¡Œ
+        //¹Ì¶¨·½¿é
+        //ÏûĞĞ
         ainext2(aidepth);
-        //è·å–ä¼°å€¼ç»“æœ
+        //»ñÈ¡¹ÀÖµ½á¹û
         airesr := aieval2(aidepth);
-        //å¦‚æœå½“å‰æ·±åº¦å°äºæ·±åº¦
+        //Èç¹ûµ±Ç°Éî¶ÈĞ¡ÓÚÉî¶È
         if aidepth < aidepthc then
-          //è¿­ä»£æ·±å…¥
+          //µü´úÉîÈë
           airesr := aigo(aidepth + 1);
-        //å¦‚æœç»“æœä»æ—§å¤§äºæœ€å¤§ç»“æœ
+        //Èç¹û½á¹ûÈÔ¾É´óÓÚ×î´ó½á¹û
         if airesr < airesm then
         begin
-          //æ›´æ–°æœ€å¤§ç»“æœ
+          //¸üĞÂ×î´ó½á¹û
           airesm := airesr;
-          //å¦‚æœå½“å‰æ·±åº¦æ˜¯1
+          //Èç¹ûµ±Ç°Éî¶ÈÊÇ1
           if aidepth = 1 then
           begin
-            //æ›´æ–°æœ€ä¼˜æ—‹è½¬
+            //¸üĞÂ×îÓÅĞı×ª
             airsit := aik2next[aidepth].sit - aiknext[aidepth].sit;
-            //æ›´æ–°æœ€ä¼˜ç§»åŠ¨
+            //¸üĞÂ×îÓÅÒÆ¶¯
             airpos := aik2next[aidepth].posx - aiknext[aidepth].posx;
-            //æ›´æ–°æœ€ä¼˜æ¨ªåæ ‡
+            //¸üĞÂ×îÓÅºá×ø±ê
             airposb := aik2next[aidepth].posx;
           end;
         end;
       end;
-      //é‡ç½®å°è¯•æ–¹å—çºµåæ ‡
+      //ÖØÖÃ³¢ÊÔ·½¿é×İ×ø±ê
       aik2next[aidepth].posy := aiknext[aidepth].posy;
     end;
   end;
-  //è¿”å›ç»“æœ
+  //·µ»Ø½á¹û
   aicalc := airesm;
 end;
 
-//AIä¸»å‡½æ•°
+//AIÖ÷º¯Êı
 function aigo(aidepth: shortint): longint;
 var
   aigoi: longint;
 begin
-  //åˆå§‹åŒ–ç»“æœ
+  //³õÊ¼»¯½á¹û
   aigo := 0;
-  //åˆå§‹åŒ–å°è¯•æ–¹å—
+  //³õÊ¼»¯³¢ÊÔ·½¿é
   aik2next[aidepth] := aiknext[aidepth];
   //if aidepth=2 then aik2next[3].knd:=0;
   //if aidepth=3 then aik2next[4].knd:=0;
-  //å¦‚æœæ–¹å—ç§ç±»ä¸ºé›¶
+  //Èç¹û·½¿éÖÖÀàÎªÁã
   if aik2next[aidepth].knd = 0 then
   begin
-    //å‰é7ç§æ–¹å—
+    //À÷±é7ÖÖ·½¿é
     for aigoi := 1 to 7 do
     begin
-      //é‡æ–°åˆå§‹åŒ–å°è¯•æ–¹å—
+      //ÖØĞÂ³õÊ¼»¯³¢ÊÔ·½¿é
       aik2next[aidepth].knd := aigoi;
       aik2next[aidepth].sit := 1;
       aik2next[aidepth].posx := wbd div 2 + 1;
       aik2next[aidepth].posy := hbd - 1;
-      //å åŠ ç»“æœ
+      //µş¼Ó½á¹û
       aigo := aigo + aicalc(aidepth);
     end;
-    //å–ç»“æœä¸ºå åŠ ç»“æœå¹³å‡å€¼
+    //È¡½á¹ûÎªµş¼Ó½á¹ûÆ½¾ùÖµ
     aigo := aigo div 7;
   end
-  //å¦‚æœæ–¹å—ç§ç±»ä¸ä¸ºé›¶
+  //Èç¹û·½¿éÖÖÀà²»ÎªÁã
   else
-    //ç›´æ¥å–ç»“æœ
+    //Ö±½ÓÈ¡½á¹û
     aigo := aicalc(aidepth);
 end;
-//åˆå§‹åŒ–ç›˜é¢
+//³õÊ¼»¯ÅÌÃæ
 
 procedure ainew2();
 begin
-  //è®¾ç½®æ»¡è¡Œ
+  //ÉèÖÃÂúĞĞ
   bdcfull := $FFFFFFFF;
-  //è®¾ç½®ç©ºè¡Œ
+  //ÉèÖÃ¿ÕĞĞ
   bdcnull := ((bdcfull shr (wbd + 2)) shl (wbd + 2)) or %11;
-  //å‰éæ·±åº¦
+  //À÷±éÉî¶È
   for aik := 0 to depthm do
     for aij := 0 to hbd + 2 do
-      //è®¾ç½®åº•çº¿ä¸ºæ»¡è¡Œ
-      //è®¾ç½®å¤©èŠ±æ¿ä¸ºæ»¡è¡Œ
+      //ÉèÖÃµ×ÏßÎªÂúĞĞ
+      //ÉèÖÃÌì»¨°åÎªÂúĞĞ
       aibd2[aij, aik] := bdcfull;
   for aik := 0 to depthm do
     for aij := 1 to hbd + 1 do
-      //è®¾ç½®ç›˜é¢ç©ºé—´ä¸ºç©ºè¡Œ
+      //ÉèÖÃÅÌÃæ¿Õ¼äÎª¿ÕĞĞ
       aibd2[aij, aik] := bdcnull;
 end;

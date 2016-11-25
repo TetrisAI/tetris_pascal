@@ -1,7 +1,7 @@
 var
   musiccur, musicpos, musiclen: longword;
 var
-  musicon: boolean = true;
+  musicon: boolean = false;
   soundon: boolean = true;
 
 procedure replaymusic();

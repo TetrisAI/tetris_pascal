@@ -1,6 +1,6 @@
 library tetris_lib;
 
-uses display;
+//uses display;
 
 {$I tetris_def.inc}
 
@@ -13,41 +13,41 @@ var
 const
   guess = 0;
 
-  //AIä¸»DLLå…¥å£
+  //AIÖ÷DLLÈë¿Ú
 function AI(boardW, boardH: longint; board: PChar; curPiece: char;
   curX, curY, curR: longint; nextPiece: char;
   bestX, bestRotation: pinteger): longint; stdcall;
 begin
-  //è®¾ç½®å®½åº¦
+  //ÉèÖÃ¿í¶È
   wbd := boardW;
-  //è®¾ç½®é«˜åº¦
+  //ÉèÖÃ¸ß¶È
   hbd := boardH;
-  //åˆå§‹åŒ–ç›˜é¢åŠæ–¹å—
+  //³õÊ¼»¯ÅÌÃæ¼°·½¿é
   ainew2();
-  //è®¾ç½®ç›˜é¢
+  //ÉèÖÃÅÌÃæ
   k := 0;
-  //å‰éé«˜åº¦
+  //À÷±é¸ß¶È
   for j := 1 to hbd do
   begin
-    //åˆå§‹åŒ–è¯¥è¡Œ
+    //³õÊ¼»¯¸ÃĞĞ
     aibd2[j, 0] := 0;
-    //å‰éå®½åº¦
+    //À÷±é¿í¶È
     for i := 1 to wbd do
     begin
-      //å¦‚æœä¼ å…¥ç›˜é¢æ•°ç»„å…ƒç´ ä¸ä¸º'0'
+      //Èç¹û´«ÈëÅÌÃæÊı×éÔªËØ²»Îª'0'
       if board[k] <> #48 then
-        //å¯¹è¯¥è¡Œä¸1è¿›è¡Œæˆ–è¿ç®—
+        //¶Ô¸ÃĞĞÓë1½øĞĞ»òÔËËã
         aibd2[j, 0] := aibd2[j, 0] or 1;
-      //è¯¥è¡Œå·¦ç§»
+      //¸ÃĞĞ×óÒÆ
       aibd2[j, 0] := aibd2[j, 0] shl 1;
-      //è·å–ä¸‹ä¸€æ•°ç»„å…ƒç´ 
+      //»ñÈ¡ÏÂÒ»Êı×éÔªËØ
       k := k + 1;
     end;
-    //è¯¥è¡Œå·¦ç§»ï¼ˆå¯¹é½ç©ºè¡Œï¼‰
-    //è¯¥è¡Œä¸ç©ºè¡Œè¿›è¡Œæˆ–è¿ç®—ï¼ˆå¡«è¡¥å¢™å£ï¼‰
+    //¸ÃĞĞ×óÒÆ£¨¶ÔÆë¿ÕĞĞ£©
+    //¸ÃĞĞÓë¿ÕĞĞ½øĞĞ»òÔËËã£¨Ìî²¹Ç½±Ú£©
     aibd2[j, 0] := (aibd2[j, 0] shl 1) or bdcnull;
   end;
-  //è®¾ç½®æ·±åº¦
+  //ÉèÖÃÉî¶È
   aidepthc := 1 + guess;
   for k := 1 to depthm do
     with aiknext[k] do
@@ -57,7 +57,7 @@ begin
       posx := wbd div 2;
       posy := hbd - 1;
     end;
-  //è®¾ç½®å½“å‰æ–¹å—ç§ç±»
+  //ÉèÖÃµ±Ç°·½¿éÖÖÀà
   with aiknext[1] do
   begin
     case curPiece of
@@ -78,12 +78,12 @@ begin
       else
         knd := 0;
     end;
-    //è®¾ç½®å½“å‰æ–¹å—ä½ç½®åŠçŠ¶æ€
+    //ÉèÖÃµ±Ç°·½¿éÎ»ÖÃ¼°×´Ì¬
     sit  := curR;
     posx := curX;
     posy := curY;
   end;
-  //è®¾ç½®ä¸‹ä¸€å—æ–¹å—ç§ç±»
+  //ÉèÖÃÏÂÒ»¿é·½¿éÖÖÀà
   with aiknext[2] do
   begin
     case nextPiece of
@@ -104,24 +104,24 @@ begin
       else
         knd := 0;
     end;
-    //è®¾ç½®æ·±åº¦
+    //ÉèÖÃÉî¶È
     if not (knd = 0) then
       aidepthc := 2 + guess;
     sit  := 1;
-    posx := wbd div 2;
+    posx := wbd div 2+1;
     posy := hbd - 1;
   end;
-  //AIä¸»å‡½æ•°
+  //AIÖ÷º¯Êı
   aigo(1);
-  //è®¾ç½®è¿”å›ç»“æœ
+  //ÉèÖÃ·µ»Ø½á¹û
   bestX^ := airposb;
   bestRotation^ := airsit + 1;
 end;
 
-//AIåç§°DLLå…¥å£
+//AIÃû³ÆDLLÈë¿Ú
 function Name(): PChar;
 begin
-  //è¿”å›AIåç§°
+  //·µ»ØAIÃû³Æ
   Name := 'Tetris_ax';
 end;
 

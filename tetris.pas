@@ -1,6 +1,6 @@
 {$APPTYPE GUI}
 program tetris;
-//ax_poklåˆ¶ä½œ
+//ax_poklÖÆ×÷
 
 uses windows, display, math;
 
@@ -23,11 +23,11 @@ const
     $1F1F1F, $7F7F7F, $7F7FFF, $7FFF7F,
     $FF7F7F, $7FFFFF, $FFFF7F, $FF7FFF,
     $BFBFBF);
-  //èƒŒæ™¯è‰²ï¼Œ7ç§æ–¹å—é¢œè‰²
+  //±³¾°É«£¬7ÖÖ·½¿éÑÕÉ«
 
 var
   sz: shortint;
-  //æ¯æ ¼å¤§å°
+  //Ã¿¸ñ´óĞ¡
 var
   i, j, k, l, m, n: longint;
   b: boolean;
@@ -35,32 +35,33 @@ var
 
 var
   ksum, Ln, sum, sln: longint;
-  //æ–¹å—æ•°ï¼Œè¡Œæ•°ï¼Œå±€æ•°ï¼Œæ€»è¡Œæ•°
+  //·½¿éÊı£¬ĞĞÊı£¬¾ÖÊı£¬×ÜĞĞÊı
   lv, aln: real;
-  //ç­‰çº§ï¼Œå¹³å‡è¡Œæ•°
+  //µÈ¼¶£¬Æ½¾ùĞĞÊı
 var
   stickb: boolean;
-  //ç§»åŠ¨æˆåŠŸæ ‡è¯†
+  //ÒÆ¶¯³É¹¦±êÊ¶
 var
   gamet, stept, lastt: longword;
-  //æ–°å±€æ—¶é—´ï¼Œå•æ­¥æ—¶é—´ï¼Œä¸‹è½æ—¶é—´ï¼ŒAIæ—¶é—´
+  //ĞÂ¾ÖÊ±¼ä£¬µ¥²½Ê±¼ä£¬ÏÂÂäÊ±¼ä£¬AIÊ±¼ä
   downt, leftt, rightt: longword;
+  oldt, framet:longword;
   aps: real;
-  //æ‰‹é€Ÿ
+  //ÊÖËÙ
 
 const
   base = 2;
 var
   key: longword;
-  //æŒ‰é”®
+  //°´¼ü
 var
   aion: shortint = 0;
-  //å¿«é€ŸAIå¼€å…³
+  //¿ìËÙAI¿ª¹Ø
 
 var
   pause: boolean = false;
   ksz: boolean = false;
-  bmpb: boolean = false;
+  bmpb: boolean = true;
   highb: shortint = 0;
   winb: boolean = false;
 
@@ -68,13 +69,13 @@ var
   bmp: array[1..8] of pbitmap;
 
 procedure getk();
-  //æ–°æ–¹å—
+  //ĞÂ·½¿é
 begin
   ksum := ksum + 1;
-  //æ–¹å—è®¡æ•°åŠ ä¸€
+  //·½¿é¼ÆÊı¼ÓÒ»
   for i := 1 to depthm - 1 do
     aiknext[i] := aiknext[i + 1];
-  //æ–¹å—åºåˆ—å‰ç§»
+  //·½¿éĞòÁĞÇ°ÒÆ
   if ksz then
     aiknext[depthm].knd := Random(2) + 3
   else
@@ -82,11 +83,11 @@ begin
   aiknext[depthm].sit := 1;
   aiknext[depthm].posx := wbd div 2 + 1;
   aiknext[depthm].posy := hbd - 1;
-  //æ·»åŠ æ–¹å—åˆ°æ–¹å—åºåˆ—
+  //Ìí¼Ó·½¿éµ½·½¿éĞòÁĞ
   lv := logn(base, Abs(Ln) + base);
-  //è®¡ç®—ç­‰çº§
+  //¼ÆËãµÈ¼¶
   stept := Round(1000 / lv);
-  //æ›´æ–°å•æ­¥ä¸‹è½æ—¶é—´
+  //¸üĞÂµ¥²½ÏÂÂäÊ±¼ä
   for sj := 1 to hbd do
   begin
     aibd2[sj, 0] := 0;
@@ -97,14 +98,14 @@ begin
       aibd2[sj, 0] := aibd2[sj, 0] shl 1;
     end;
     aibd2[sj, 0] := (aibd2[sj, 0] shl 1) or bdcnull;
-    //é‡æ–°è®¾ç½®AIç›˜é¢
+    //ÖØĞÂÉèÖÃAIÅÌÃæ
   end;
 end;
 
 procedure drawbd(); forward;
 
 procedure New();
-  //åˆå§‹åŒ–
+  //³õÊ¼»¯
 begin
   for i := -1 to wbd + 1 do
     for j := -1 to hbd + 1 do
@@ -112,26 +113,25 @@ begin
   for i := 1 to wbd do
     for j := 1 to hbd + 1 do
       bd[i, j] := 0;
-  //åˆå§‹åŒ–æ£‹ç›˜
+  //³õÊ¼»¯ÆåÅÌ
   for l := 1 to depthm do
     getk();
-  //è·å–ç¬¬ä¸€å—æ–¹å—
+  //»ñÈ¡µÚÒ»¿é·½¿é
   sum := sum + 1;
-  //å±€æ•°åŠ ä¸€
+  //¾ÖÊı¼ÓÒ»
   sln := sln + Ln;
-  //æ›´æ–°è¡Œæ•°æ€»å’Œ
+  //¸üĞÂĞĞÊı×ÜºÍ
   aln := sln / sum;
-  //è®¡ç®—å¹³å‡è¡Œæ•°
+  //¼ÆËãÆ½¾ùĞĞÊı
   Ln := 0;
   ksum := 0;
-  //è¡Œæ•°ï¼Œå—æ•°æ¸…é›¶
+  //ĞĞÊı£¬¿éÊıÇåÁã
   gamet := gettime;
-  //é‡è®¡æ–°å±€æ—¶é—´
+  //ÖØ¼ÆĞÂ¾ÖÊ±¼ä
   stept := 1000;
-  //é‡è®¾å•æ­¥æ—¶é—´
+  //ÖØÉèµ¥²½Ê±¼ä
   aps := 0;
   lv := 1;
-  drawbd();
   playsound('start');
   if aion = 0 then
     replaymusic();
@@ -146,7 +146,7 @@ begin
 end;
 
 function dead(): boolean;
-  //åˆ¤å®šæ­»äº¡
+  //ÅĞ¶¨ËÀÍö
 begin
   with aiknext[1] do
   begin
@@ -162,7 +162,7 @@ begin
 end;
 
 function Erase(): shortint;
-  //æ¶ˆè¡Œ
+  //ÏûĞĞ
 begin
   j := 1;
   for i := 1 to hbd + 1 do
@@ -212,24 +212,24 @@ begin
 end;
 
 procedure Next();
-  //ä¸‹ä¸€æ­¥
+  //ÏÂÒ»²½
 begin
   with aiknext[1] do
     for si := -2 to 1 do
       for sj := -2 to 1 do
         if pce[knd, sit, - 1 - sj, si] then
           bd[posx + si, posy + sj] := knd;
-  //å›ºå®šæ–¹å—åˆ°ç›˜é¢
+  //¹Ì¶¨·½¿éµ½ÅÌÃæ
   Ln := Ln + Erase();
-  //æ¶ˆè¡Œå¹¶æ›´æ–°è¡Œæ•°
+  //ÏûĞĞ²¢¸üĞÂĞĞÊı
   getk();
-  //è·å–æ–°æ–¹å—
+  //»ñÈ¡ĞÂ·½¿é
   aps := 1000 / (((gettime - gamet + 1) / ksum));
-  //è®¡ç®—æ‰‹é€Ÿ
+  //¼ÆËãÊÖËÙ
 end;
 
 procedure stick(knd, sit, posx, posy: shortint);
-  //åˆ¤æ–­æ˜¯å¦èƒ½å¡å…¥ï¼ˆç§»åŠ¨æˆ–æ—‹è½¬ï¼‰
+  //ÅĞ¶ÏÊÇ·ñÄÜÈûÈë£¨ÒÆ¶¯»òĞı×ª£©
 begin
   stickb := true;
   for si := -2 to 1 do
@@ -238,7 +238,7 @@ begin
         if not (bd[posx + si, posy + sj] = 0) then
           stickb := false;
   if stickb = true then
-  //å¦‚æœèƒ½å¡å…¥åˆ™ç§»åŠ¨
+  //Èç¹ûÄÜÈûÈëÔòÒÆ¶¯
   begin
     aiknext[1].knd  := knd;
     aiknext[1].sit  := sit;
@@ -248,7 +248,7 @@ begin
 end;
 
 procedure Left();
-  //å·¦ç§»ä¸€æ ¼
+  //×óÒÆÒ»¸ñ
 begin
   with aiknext[1] do
     stick(knd, sit, posx - 1, posy);
@@ -256,7 +256,7 @@ begin
 end;
 
 procedure Right();
-  //å³ç§»ä¸€æ ¼
+  //ÓÒÒÆÒ»¸ñ
 begin
   with aiknext[1] do
     stick(knd, sit, posx + 1, posy);
@@ -264,39 +264,39 @@ begin
 end;
 
 procedure up();
-  //æ—‹è½¬ä¸€ä¸‹
+  //Ğı×ªÒ»ÏÂ
 begin
   with aiknext[1] do
     stick(knd, sit mod 4 + 1, posx, posy);
 end;
 
 procedure up2();
-  //æ—‹è½¬ä¸€ä¸‹
+  //Ğı×ªÒ»ÏÂ
 begin
   with aiknext[1] do
     stick(knd, (sit + 2) mod 4 + 1, posx, posy);
 end;
 
 procedure down2();
-  //ä¸‹è½ä¸€æ ¼
+  //ÏÂÂäÒ»¸ñ
 begin
   with aiknext[1] do
     stick(knd, sit, posx, posy - 1);
   downt := gettime;
-  //æ›´æ–°ä¸‹è½æ—¶é—´
+  //¸üĞÂÏÂÂäÊ±¼ä
 end;
 
 procedure down();
-  //ä¸‹è½ä¸€æ ¼å¹¶å›ºå®š
+  //ÏÂÂäÒ»¸ñ²¢¹Ì¶¨
 begin
   down2();
   if not (stickb) and not (dead) then
     Next();
-  //å¦‚æœç§»åŠ¨å¤±è´¥åˆ™ä¸‹ä¸€æ­¥
+  //Èç¹ûÒÆ¶¯Ê§°ÜÔòÏÂÒ»²½
 end;
 
 procedure space();
-  //ä¸‹è½åˆ°åº•
+  //ÏÂÂäµ½µ×
 begin
   repeat
     down();
@@ -304,28 +304,28 @@ begin
 end;
 
 procedure ai();
-  //AIç§»åŠ¨
+  //AIÒÆ¶¯
 begin
   aigo(1);
-  //AIè®¡ç®—
+  //AI¼ÆËã
   while airsit > 0 do
   begin
     up();
     airsit := airsit - 1;
   end;
-  //AIæ—‹è½¬
+  //AIĞı×ª
   while airpos < 0 do
   begin
     Left();
     airpos := airpos + 1;
   end;
-  //AIå·¦ç§»
+  //AI×óÒÆ
   while airpos > 0 do
   begin
     Right();
     airpos := airpos - 1;
   end;
-  //AIå³ç§»
+  //AIÓÒÒÆ
   space();
 end;
 
@@ -342,14 +342,14 @@ begin
 end;
 
 procedure drawk(x, y: shortint; c: shortint);
-  //ç»˜åˆ¶æ–¹å—
+  //»æÖÆ·½¿é
 begin
   if (c <= 0) then
     bar(sz * (x - 1), sz * (hbd - y), sz - 1, sz - 1, ck[c], ck[c])
   else if bmpb then
     drawbmp(bmp[c], 0, 0, 16, 16, sz * (x - 1), sz * (hbd - y), sz, sz)
   else
-    bar(sz * (x - 1), sz * (hbd - y), sz - 1, sz - 1, ck[c], white);
+    bar(sz * (x - 1), sz * (hbd - y), sz - 1, sz - 1, white, ck[c]);
 end;
 
 procedure drawt(s: string; Pos: shortint; c: longword);
@@ -359,8 +359,9 @@ begin
 end;
 
 procedure drawbd();
-  //ç»˜åˆ¶ç›˜é¢
+  //»æÖÆÅÌÃæ
 begin
+  display.Clear();
   for i := 1 to wbd do
     for j := 1 to hbd do
       bddraw[i, j] := bd[i, j];
@@ -369,11 +370,11 @@ begin
       for j := -2 to 1 do
         if pce[knd, sit, - 1 - j, i] then
           bddraw[posx + i, posy + j] := knd;
-  //å›ºå®šä¸‹è½ä¸­çš„æ–¹å—
+  //¹Ì¶¨ÏÂÂäÖĞµÄ·½¿é
   for i := 1 to wbd do
     for j := 1 to hbd do
       drawk(i, j, bddraw[i, j]);
-  //ç»˜åˆ¶ç›˜é¢æ–¹å—
+  //»æÖÆÅÌÃæ·½¿é
   for k := 2 to depthm do
     with aiknext[k] do
     begin
@@ -383,9 +384,9 @@ begin
             drawk(wbd + 4 + i, hbd - 2 + j - k * 3, knd)
       else
         drawk(wbd + 4 + i, hbd - 2 + j - k * 3, - 1);
-      //ç»˜åˆ¶nextåŒºåŸŸ
+      //»æÖÆnextÇøÓò
       drawt('next ' + i2s(k - 1), 2 + k * 3, ck[knd]);
-      //ç»˜åˆ¶nextæ–‡å­—
+      //»æÖÆnextÎÄ×Ö
     end;
   drawt('Game ' + i2s(sum), 1, ck[sum mod 7 + 1]);
   drawt('Score ' + r2s(aln), 2, ck[sum mod 7 + 1]);
@@ -397,25 +398,24 @@ begin
     drawt('Paused', 7, ck[5])
   else
     drawt('Paused', 7, black);
+  freshwin();
 end;
 
 procedure SetSize(size: shortint);
 begin
-  if winb then
-    CloseWin();
   winb := false;
   sz := size;
-  CreateWin((wbd + 6) * sz, hbd * sz, black, black);
-  //å»ºç«‹çª—å£
+  if not(IsWin()) then
+    CreateWin((wbd + 6) * sz, hbd * sz, black, black);
+  display.SetSize((wbd + 6) * sz, hbd * sz);
+  //½¨Á¢´°¿Ú
   winb := true;
   settitle('Tetris ax');
-  //è®¾ç½®æ ‡é¢˜æ–‡å­—
-  setfresh(1);
-  //è®¾ç½®çª—å£åˆ·æ–°é¢‘ç‡
+  //ÉèÖÃ´°¿ÚË¢ĞÂÆµÂÊ
   setfontsize(sz div 2, sz);
-  //è®¾ç½®æ–‡å­—å¤§å°
+  //ÉèÖÃÎÄ×Ö´óĞ¡
   setfontname('Consolas');
-  //è®¾ç½®å­—ä½“
+  //ÉèÖÃ×ÖÌå
   New();
 end;
 
@@ -428,113 +428,71 @@ begin
 end;
 
 procedure init();
-  //ç¨‹åºåˆå§‹åŒ–
+  //³ÌĞò³õÊ¼»¯
 begin
   Randomize;
-  //åˆå§‹åŒ–éšæœºæ•°å‘ç”Ÿå™¨
-  loadbmps();
   SetSize(25);
+  framet:=30;
+  oldt:=gettime;
+  //³õÊ¼»¯Ëæ»úÊı·¢ÉúÆ÷
+  loadbmps();
   ainew2();
-  //AIåˆå§‹åŒ–
+  //AI³õÊ¼»¯
   drawbd();
-  //é¦–æ¬¡ç»˜å›¾
+  //Ê×´Î»æÍ¼
 end;
 
 begin
-  //ä¸»ç¨‹åº
+  //Ö÷³ÌĞò
   initsound();
-  //åˆå§‹åŒ–éŸ³é¢‘
+  //³õÊ¼»¯ÒôÆµ
   init();
-  //åˆå§‹åŒ–ç¨‹åº
+  //³õÊ¼»¯³ÌĞò
   repeat
-    //ä¸»å¾ªç¯
-    while aion > 0 do
-    //åˆ¤æ–­AIæ˜¯å¦æ‰“å¼€
-    begin
-      ai();
-      if dead then
-        New();
-      if (aion = 1) or (gettime > lastt + stept) then
-      //åˆ¤æ–­æ˜¯å¦éœ€è¦ç»˜å›¾
-      begin
-        lastt := gettime;
-        drawbd();
-        nextmsg();
-        if ismsg(15) then
-        begin
-          bar(0, 0, _w, _h, black);
-          drawbd();
-        end;
-        if iskey() then
-        //åˆ¤æ–­æ˜¯å¦æŒ‰é”®ä½¿AIå…³é—­
-        begin
-          key := getkey();
-          case key of
-            k_1:
-              aion := aion - 1;
-            k_2:
-              aion := -aion * 2 + 4;
-            k_3:
-              aidepthc := aidepthc mod depthm + 1;
-            else
-              aion := 0;
-          end;
-          //case
-        end;
-        //iskey
-      end;
-      //draw
-    end;
-    //aion
-    nextmsg();
-    checkmusic();
+  //Ö÷Ñ­»·
+  if aion > 0 then
+  //ÅĞ¶ÏAIÊÇ·ñ´ò¿ª
+  begin
+    ai();
     if dead then
+      New();
+    if aion=1 then drawbd();
+  end;
+  //aion
+//  checkmusic();
+  if isnextmsg then
     begin
-      playsound('lost');
-      drawt('Press "R"', 7, ck[5]);
-      waitkey();
-    end;
     if iskey() then
-    //åˆ¤æ–­æ˜¯å¦æŒ‰é”®
-    begin
-      key := getkey();
-      //è·å–æŒ‰é”®
-      if key = k_down then
-      //åˆ¤æ–­æ˜¯å¦ä¸ºä¸‹
+    //ÅĞ¶ÏÊÇ·ñ°´¼ü
       begin
-        down();
-        repeat
-          if (gettime > downt + 20) then
-          begin
-            down2();
-            drawbd();
-          end;
-          nextmsg();
-        until ismsg(257) or (iskey and not (iskey(k_down)));
-      end;
-      if iskey() then
-        key := getkey();
-      //å†æ¬¡è·å–æŒ‰é”®
+      key := getkey();
+      //»ñÈ¡°´¼ü
+      case key of
+        k_1:
+          if aion=1 then aion := 0 else aion:=1;
+        k_2:
+          if aion=2 then aion := 0 else aion:=2;
+        else
+          aion := 0;
+        end;
       case key of
         k_left:
           Left();
         k_right:
           Right();
+        k_down:
+          down();
         k_up:
           up();
         96:
           up2();
         k_space:
           space();
-        k_return:
+        k_enter:
           if dead then
             New()
           else
             ai();
-          k_1:
-          aion := 1;
-        k_2:
-          aion := 2;
         k_3:
           aidepthc := aidepthc mod depthm + 1;
         k_4:
@@ -544,13 +502,13 @@ begin
         k_9:
           bmpb := not (bmpb);
         107:
-          SetSize(sz + 2);
+          SetSize(min(sz + 2,64));
         109:
-          SetSize(sz - 2);
+          SetSize(max(sz - 2,1));
         187:
-          SetSize(sz + 2);
+          SetSize(min(sz + 2,64));
         189:
-          SetSize(sz - 2);
+          SetSize(max(sz - 2,1));
         k_C:
           Clear();
         k_H:
@@ -562,21 +520,22 @@ begin
         k_R:
           New();
         k_W:
-          setbdsize(wbd, hbd + 1);
+          setbdsize(wbd, max(hbd - 1,4));
         k_A:
-          setbdsize(wbd - 1, hbd);
+          setbdsize(max(wbd - 1,4), hbd);
         k_S:
-          setbdsize(wbd, hbd - 1);
+          setbdsize(wbd, min(hbd + 1,64));
         k_D:
-          setbdsize(wbd + 1, hbd);
+          setbdsize(min(wbd + 1,64), hbd);
         k_Z:
           ksz := not (ksz);
-        k_escape:
+        k_esc:
           Halt();
-
-        //    227:drawtextxy('IME detected',0,0,red,yellow);
-      end;
-      //æ ¹æ®æŒ‰é”®æ‰§è¡Œæ“ä½œ
+        else
+          if dead then
+            New();
+        end;
+      //¸ù¾İ°´¼üÖ´ĞĞ²Ù×÷
       case key of
         k_left:;
         k_right:;
@@ -592,24 +551,22 @@ begin
             stopaudio(musiccur);
           else
             playsound('click');
-      end;
-      //æ ¹æ®æŒ‰é”®æ’­æ”¾éŸ³é¢‘
-      drawbd();
-      //é‡ç»˜ç›˜é¢
-    end;
-    if (gettime > downt + stept) and not (pause) then
-    //åˆ¤æ–­å½“å‰æ—¶é—´æ˜¯å¦å·²è¶…è¿‡å•æ­¥ä¸‹è½æ—¶é—´
+        end;//case
+      end;//key
+    if dead then
+      playsound('lost');
+    end;//msg
+  if (gettime > downt + stept) and not (pause) then
+  //ÅĞ¶Ïµ±Ç°Ê±¼äÊÇ·ñÒÑ³¬¹ıµ¥²½ÏÂÂäÊ±¼ä
+    down();
+  //È¡ÏÂÒ»ÌõÏûÏ¢
+  if aion<2 then sleep(1);
+//  if aion=2 then framet:=stept else framet:=15;
+  if (gettime > oldt + framet) then
     begin
-      down();
-      //ä¸‹è½
-      drawbd();
-      //é‡ç»˜ç›˜é¢
+    while gettime > oldt + framet do oldt:=oldt + framet;
+    drawbd();
     end;
-    //å–ä¸‹ä¸€æ¡æ¶ˆæ¯
-    if ismsg(15) then
-    begin
-      bar(0, 0, _w, _h, black);
-      drawbd();
-    end;
-  until false;
+  //ÖØ»æÅÌÃæ
+  until iskey(k_esc) or not(iswin());
 end.

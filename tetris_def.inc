@@ -10,11 +10,3 @@ const
   depthm = 5;
 const
   ln34 = false;
-
-function Max(a, b: real): real;inline;
-begin
-  if a > b then
-    Max := a
-  else
-    Max := b;
-end;
