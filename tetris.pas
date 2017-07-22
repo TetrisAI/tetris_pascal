@@ -552,6 +552,7 @@ begin
           else
             playsound('click');
         end;//case
+      //根据按键播放声音
       end;//key
     if dead then
       playsound('lost');
