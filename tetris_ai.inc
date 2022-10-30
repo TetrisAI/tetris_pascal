@@ -34,6 +34,7 @@ var
   aitw, aith: longint;
   aihon, aihol, aihod, aihoh: longint;
   aiholln, ailln: longint;
+  ailln3, ailln4: boolean;
   aill, aiho: array[0..maxwbd + 1] of shortint;
   aiel: longint;
   aitq, aitq1, aitq2, aitq3, aitq4, aitq5: longword;
@@ -162,6 +163,8 @@ begin
   aiholln := 0;
   //初始化井深
   ailln := 0;
+  ailln3 := false;
+  ailln4 := false;
   //厉遍宽度
   for aii := wbd downto 1 do
   begin
@@ -222,6 +225,9 @@ begin
         //井列加一
         aill[aii] := aill[aii] + 1;
         //设置井深加井列
+        if aill[aii] = 3 then ailln3 := true;
+        if aill[aii] = 4 then ailln4 := true;
+        if aill[aii] > 4 then aill[aii] := aill[aii] - 2;
         ailln := ailln + aill[aii];
       end;
       //井行右移
@@ -250,25 +256,35 @@ begin
   aiel := 0;
   if ln34 then
   begin
-    ailln := ailln - 15;
-    if ailln < 0 then
+    if ailln3 then ailln := ailln - 6;
+	if ailln4 then ailln := ailln - 4;
       ailln := 0;
-    if aies[aidepth] <= 2 then
-      aiel := aies[aidepth] * 600
+    if aies[1] <= 2 then
+      aiel := aies[1]
     else
-      aiel := 0;
+      aiel := -aies[1];
   end;
   //设置左中右平衡破缺参数
   aimid := -Abs(aik2next[aidepth].posx * 2 - wbd);
   //返回估值结果
-  aieval2 := +aitw * 80 + aith * 80 + aihon * 60 + aihol * 380 +
-    ailln * 100 + aiholln * 40 + aihoh * 5 + aimid * 2 + aiel * 10;
+  aieval2 := aitw * 80 + aith * 80 + aihon * 60 + aihol * 380 +
+    ailln * 100 + aiholln * 40 + aihoh * 5 + aimid * 2 + aiel * 600;
   for ail := 1 to aidepthc do
     aieval2 := aieval2 + (aihcur[ail] * 1750 div (hbd * aidepthc) -
-      aies[ail] * 60 div aidepthc);
+      aies[ail] * 600 div aidepthc);
   aieval2 := aieval2 + aistick2k(aidepth) * 50000;
-  //  with aik2next[aidepth] do
-  //  writeln(sit:5,posx:5,aihcur:5,aies:5,aitw:5,aith:5,aihon:5,aiholln:5,aihol:5,ailln:5,aimid:5,aihoh:5,aiel:5,aieval2:5);
+//with aik2next[aidepth] do writeln(aidepth:5,sit:5,posx:5,aieval2:5);
+//writeln(aitw:5,aith:5,aihon:5,aihol:5,ailln:5,aiholln:5,aihoh:5,aimid:5,aiel:5,aihcur[1]:5,aihcur[2]:5,aies[1]:5,aies[2]:5);
+//writeln(aitw*80:5,aith*80:5,aihon*60:5,aihol*380:5,ailln*100:5,aiholln*40:5,aihoh*5:5,aimid*2:5,aiel,aihcur[1]*1750 div(hbd*aidepthc):5,aihcur[2]*1750 div(hbd*aidepthc):5,aies[1]*600 div aidepthc:5,aies[2]*600 div aidepthc:5);
+{
+if aies[2]+aies[1]>0 then
+  begin
+ writeln(aies[1],#9,aies[2],#9,aidepth);
+with aik2next[1] do writeln(#9,ailln,#9,knd,#9,sit,#9,posx,#9);
+with aik2next[2] do writeln(#9,ailln,#9,knd,#9,sit,#9,posx,#9);
+end;
+}
+//writeln();
 end;
 
 //超前引用
@@ -392,6 +408,7 @@ begin
   aigo := 0;
   //初始化尝试方块
   aik2next[aidepth] := aiknext[aidepth];
+//if aidepth=2 then aik2next[aidepth].knd:=2;
   //如果方块种类为零
   if aik2next[aidepth].knd = 0 then
   begin

@@ -1,4 +1,4 @@
-{$APPTYPE GUI}
+//{$APPTYPE GUI}
 program tetris;
 //ax_pokl制作
 
@@ -37,6 +37,8 @@ var
 
 var
   ksum, Ln, sum, sln: longint;
+  Ln0: array[0..4] of longint;
+  Erase0: longint;
   //方块数，行数，局数，总行数
   lv, aln: real;
   //等级，平均行数
@@ -61,7 +63,7 @@ var
   //快速AI开关
 
 var
-  pause: boolean = false;
+  pause: boolean = true;
   ksz: boolean = false;
   bmpb: boolean = true;
   highb: shortint = 0;
@@ -159,6 +161,14 @@ begin
   aln := sln / sum;
   //计算平均行数
   Ln := 0;
+  {
+  Ln0[0] := 0;
+  Ln0[1] := 0;
+  Ln0[2] := 0;
+  Ln0[3] := 0;
+  Ln0[4] := 0;
+  }
+  Erase0 := 0;
   ksum := 0;
   //行数，块数清零
   gamet := gettime;
@@ -255,7 +265,9 @@ begin
         if pce[knd, sit, - 1 - sj, si] then
           bd[posx + si, posy + sj] := knd;
   //固定方块到盘面
-  Ln := Ln + Erase();
+  Erase0 := Erase();
+  Ln := Ln + Erase0;
+  Ln0[Erase0] := Ln0[Erase0] + 1;
   //消行并更新行数
   getk();
   if kai then
@@ -433,12 +445,20 @@ begin
   drawt('Score ' + r2s(aln), 2, ck[sum mod 7 + 1]);
   drawt('Level ' + r2s(lv), 3, ck[Trunc(lv) mod 7 + 1]);
   drawt('APS ' + r2s(aps), 4, ck[Trunc(aps * 10) mod 7 + 1]);
-  drawt('Line ' + i2s(Abs(Ln)), 5, ck[Abs(Ln) mod 7 + 1]);
-  drawt('Depth ' + i2s(aidepthc), 6, ck[aidepthc]);
+  drawt('Depth ' + i2s(aidepthc), 5, ck[aidepthc]);
+//  drawt('Line ' + i2s(Abs(Ln)), 6, ck[Abs(Ln) mod 7 + 1]);
+
+  drawt('Line ' + i2s(Ln0[1]), 7, ck[Abs(Ln0[1]) mod 7 + 1]);
+  drawt('Line ' + i2s(Ln0[2]), 8, ck[Abs(Ln0[2]) mod 7 + 1]);
+  drawt('Line ' + i2s(Ln0[3]), 9, ck[Abs(Ln0[3]) mod 7 + 1]);
+  drawt('Line ' + i2s(Ln0[4]), 10, ck[Abs(Ln0[4]) mod 7 + 1]);
+
+{
   if pause then
     drawt('Paused', 7, ck[5])
   else
     drawt('Paused', 7, black);
+}
   freshwin();
 end;
 
