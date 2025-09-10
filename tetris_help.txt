@@ -30,4 +30,6 @@ Tetris_Pascal
 * P	暂停
 * R	重新开始
 * Z	SZ块开关
+* K	坑爹模式
+* L	边框开关
 * ESC	关闭游戏
